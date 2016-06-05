@@ -4,6 +4,7 @@ import GraphicsEngine.DisplayManager;
 import GraphicsEngine.Model.Loader;
 import GraphicsEngine.Model.RawModel;
 import GraphicsEngine.Model.Renderer;
+import GraphicsEngine.Shaders.StaticShader;
 import org.lwjgl.opengl.Display;
 
 /**
@@ -17,6 +18,7 @@ public class Test {
 
         Loader loader = new Loader();
         Renderer renderer = new Renderer();
+        StaticShader shader = new StaticShader();
 
         float[] vertices = { -0.5f, 0.5f, 0f,
                 -0.5f, -0.5f, 0f,
@@ -29,10 +31,13 @@ public class Test {
         RawModel model = loader.loadToVAO(vertices,indices);
         while (!Display.isCloseRequested()){
             renderer.prepare();
+            shader.start();
             renderer.render(model);
+            shader.start();
             DisplayManager.updateDisplay();
         }
         loader.cleanUP();
+        shader.cleanUp();
         DisplayManager.closeDisplay();
 
 
