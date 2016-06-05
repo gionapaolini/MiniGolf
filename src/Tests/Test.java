@@ -109,11 +109,11 @@ public class Test {
         RawModel model = loader.loadToVAO(vertices, textureCoords,indices);
         ModelTexture texture1 = new ModelTexture(loader.loadTexture("tree"));
         TexturedModel texturedModel = new TexturedModel(model,texture1);
-        Entity entity = new Entity(texturedModel,new Vector3f(-1,0,0),0,0,0,1);
+        Entity entity = new Entity(texturedModel,new Vector3f(0,0,-5),0,0,0,1);
 
         while (!Display.isCloseRequested()){
 
-            camera.move();
+            camera.moveOnSight();
             renderer.prepare();
             shader.start();
             shader.loadViewMatrix(camera);
