@@ -3,6 +3,7 @@ package Tests;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
+import GraphicsEngine.Entities.Terrain;
 import GraphicsEngine.RenderEngine.*;
 import GraphicsEngine.Model.RawModel;
 import GraphicsEngine.Model.TexturedModel;
@@ -25,6 +26,8 @@ public class Test {
 
         Camera camera = new Camera();
 
+        Terrain terrain = new Terrain(0,0,5,5,loader,new ModelTexture(loader.loadTexture("grassy2")));
+
         RawModel model = OBJLoader.loadObjModel("tree", loader);
         ModelTexture texture1 = new ModelTexture(loader.loadTexture("tree"));
         TexturedModel texturedModel = new TexturedModel(model,texture1);
@@ -37,7 +40,7 @@ public class Test {
             camera.moveOnSight();
 
             renderer.render(light,camera);
-
+            renderer.processTerrain(terrain);
             renderer.processEntity(entity);
 
 
