@@ -2,6 +2,7 @@ package Tests;
 
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
+import GraphicsEngine.Entities.Light;
 import GraphicsEngine.RenderEngine.DisplayManager;
 import GraphicsEngine.RenderEngine.Loader;
 import GraphicsEngine.Model.RawModel;
@@ -26,6 +27,7 @@ public class Test {
 
         StaticShader shader = new StaticShader();
         Renderer renderer = new Renderer(shader);
+        Light light = new Light(new Vector3f(0,20,0),new Vector3f(1,1,1));
 
         Camera camera = new Camera();
 
@@ -39,6 +41,7 @@ public class Test {
             camera.moveOnSight();
             renderer.prepare();
             shader.start();
+            shader.loadLight(light);
             shader.loadViewMatrix(camera);
             renderer.render(entity,shader);
             shader.stop();
