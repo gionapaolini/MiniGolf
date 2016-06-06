@@ -3,11 +3,9 @@ package Tests;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
-import GraphicsEngine.RenderEngine.DisplayManager;
-import GraphicsEngine.RenderEngine.Loader;
+import GraphicsEngine.Entities.Terrain;
+import GraphicsEngine.RenderEngine.*;
 import GraphicsEngine.Model.RawModel;
-import GraphicsEngine.RenderEngine.OBJLoader;
-import GraphicsEngine.RenderEngine.Renderer;
 import GraphicsEngine.Model.TexturedModel;
 import GraphicsEngine.Shaders.StaticShader;
 import GraphicsEngine.Textures.ModelTexture;
@@ -26,7 +24,8 @@ public class Test {
         Loader loader = new Loader();
 
         StaticShader shader = new StaticShader();
-        Renderer renderer = new Renderer(shader);
+        MasterRenderer renderer = new MasterRenderer();
+       // Terrain terrain = new Terrain(0,0,5,5,loader,new ModelTexture(loader.loadTexture("grassy2")));
         Light light = new Light(new Vector3f(0,20,0),new Vector3f(1,1,1));
 
         Camera camera = new Camera();
@@ -43,7 +42,8 @@ public class Test {
             shader.start();
             shader.loadLight(light);
             shader.loadViewMatrix(camera);
-            renderer.render(entity,shader);
+            renderer.processEntity(entity);
+  //          renderer.processTerrain(terrain);
             shader.stop();
             DisplayManager.updateDisplay();
         }
