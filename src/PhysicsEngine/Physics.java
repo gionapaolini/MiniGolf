@@ -31,17 +31,20 @@ public class Physics {
 
     public static void applyCollision(GolfObject obj, Vector3f normals, float time){
         Vector3f vel = obj.getVelocity();
-        System.out.println(vel);
-        System.out.println(obj.getPosition());
         float dot = Maths.dot(vel,normals);
         Vector3f normalProc = Maths.scalarProduct(Maths.scalarProduct(normals,(1+obj.getCor())), dot);
         Vector3f newVel = Maths.vector3SUB(vel, normalProc);
-        System.out.println(newVel);
-        System.out.println("------------");
-
-
         obj.setVelocity(newVel);
-
     }
 
+    public static void applyCollision(GolfObject obj, GolfObject obj2, Vector3f normals, float time){
+        Vector3f vel1 = obj.getVelocity();
+        Vector3f vel2 = obj2.getVelocity();
+
+        Vector3f Vr = Maths.vector3SUB(vel1, vel2);
+        float dot = Maths.dot(Vr,normals);
+        Vector3f I = Maths.scalarProduct(normals,(1+obj.getCor()*dot/(1/obj.getMass() + 1/obj2.getMass())));
+        obj.setVelocity(Maths.vector3SUB(vel1,Maths.scalarProduct(I,1/obj.getMass())));
+        obj2.setVelocity(Maths.vector3SUM(vel2,Maths.scalarProduct(I,1/obj.getMass())));
+    }
 }

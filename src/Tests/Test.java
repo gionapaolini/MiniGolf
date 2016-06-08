@@ -29,23 +29,46 @@ public class Test {
 
         RawModel model = OBJLoader.loadObjModel("pallo", loader);
         ModelTexture texture1 = new ModelTexture(loader.loadTexture("white"));
-        TexturedModel texturedModel = new TexturedModel(model,texture1);
-        Entity entity = new Entity(texturedModel,new Vector3f(2.5f,2,2.5f),0,0,0,0.25f);
+        ModelTexture texture2 = new ModelTexture(loader.loadTexture("black"));
+
+        TexturedModel texturedModel1 = new TexturedModel(model,texture1);
+        TexturedModel texturedModel2 = new TexturedModel(model,texture2);
+
+        Entity entity = new Entity(texturedModel1,new Vector3f(1f,2,2.5f),0,0,0,0.25f);
+        Entity entity1 = new Entity(texturedModel2,new Vector3f(4f,2,2.5f),0,0,0,0.25f);
+
+
 
         Ball ball = new Ball(entity);
+        Ball ball1 = new Ball(entity1);
+        ball.setVelocity(new Vector3f(0.5f,0,0));
+        ball1.setVelocity(new Vector3f(-0.5f,0,0));
+
         MasterRenderer renderer = new MasterRenderer();
         float time = 0.0183f;
         Vector3f normal = new Vector3f(0,1,0);
+        long last =0;
         while (!Display.isCloseRequested()){
 
             Physics.applyGravity(ball, time);
             if(ball.getPosition().y<=0)
                 Physics.applyCollision(ball, normal, time);
             Physics.setNewPosition(ball, time);
+
+            Physics.applyGravity(ball1, time);
+            if(ball.getPosition().y<=0)
+                Physics.applyCollision(ball1, normal, time);
+            Physics.setNewPosition(ball1, time);
+            if(ball.getPosition().x<2.55 && ball.getPosition().x>2.45 && System.currentTimeMillis()-last>1000){
+                System.out.println("d");
+                Physics.applyCollision(ball, ball1, new Vector3f(1,0,0), time);
+                last = System.currentTimeMillis();
+            }
             camera.moveOnSight();
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(entity);
+            renderer.processEntity(entity1);
 
 
             DisplayManager.updateDisplay();
