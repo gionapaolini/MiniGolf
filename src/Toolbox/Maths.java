@@ -32,4 +32,19 @@ public class Maths {
         Matrix4f.translate(negativeCameraPos, viewMatrix, viewMatrix);
         return viewMatrix;
     }
+
+    public static Vector3f vector3SUB(Vector3f first, Vector3f second){
+        return new Vector3f(first.x-second.x,first.y-second.y,first.z-second.z);
+    }
+    public static Vector3f vector3SUM(Vector3f first, Vector3f second){
+        return new Vector3f(first.x+second.x,first.y+second.y,first.z+second.z);
+    }
+
+    public static Vector3f scalarProduct(Vector3f vector, float n){
+        return new Vector3f(vector.x*n,vector.y*n,vector.z*n);
+    }
+
+    public static float dot(Vector3f first, Vector3f second){
+        return first.x*second.x + first.y*second.y + first.z*second.z;
+    }
 }

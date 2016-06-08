@@ -8,11 +8,11 @@ import org.lwjgl.util.vector.Vector3f;
  * Created by giogio on 05/06/16.
  */
 public class Camera {
-    private Vector3f position = new Vector3f(0,0,0);
+    private Vector3f position = new Vector3f(2.5f,5,8);
     private float lx =0;
     private float ly =0;
     private float lz =-1;
-    private float pitch;
+    private float pitch=40;
     private float yaw;
     private float roll;
 
