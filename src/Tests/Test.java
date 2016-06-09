@@ -47,7 +47,7 @@ public class Test {
         ModelTexture red = new ModelTexture(loader.loadTexture("red"));
 
         MasterRenderer renderer = new MasterRenderer();
-        float time = 0.001f;
+        float time = 0.0083f;
         Vector3f normal = new Vector3f(0,1,0);
         long last =0;
         while (!Display.isCloseRequested()){
@@ -85,12 +85,12 @@ public class Test {
             if(ball.getPosition().y<=0)
                 Physics.applyCollision(ball1, normal, time);
             Physics.setNewPosition(ball1, time);
-            /*
+
             if(ball.getPosition().x<2.55 && ball.getPosition().x>2.45 && System.currentTimeMillis()-last>1000){
                 Physics.applyCollision(ball, ball1, new Vector3f(0,0,-1), time);
                 last = System.currentTimeMillis();
             }
-            */
+
             camera.moveOnSight();
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
