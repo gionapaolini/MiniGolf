@@ -20,6 +20,11 @@ public abstract class GolfObject {
         velocity = new Vector3f(0,0,0);
         mass = 1;
         cor = 0.68f;
+        setRealTexture(model.getTexture());
+    }
+
+    public Vector3f[] getWorldProjectionPoint(){
+        return model.getWorldProjectionPoints();
     }
     public Vector3f getVelocity() {
         return velocity;
@@ -67,4 +72,5 @@ public abstract class GolfObject {
     public float getCor(){
         return cor;
     }
+
 }

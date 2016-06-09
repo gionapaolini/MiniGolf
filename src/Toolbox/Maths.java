@@ -3,6 +3,7 @@ package Toolbox;
 import GraphicsEngine.Entities.Camera;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 /**
  * Created by giogio on 05/06/16.
@@ -46,5 +47,15 @@ public class Maths {
 
     public static float dot(Vector3f first, Vector3f second){
         return first.x*second.x + first.y*second.y + first.z*second.z;
+    }
+
+    public static Vector4f Vector4Matrix4Product(Matrix4f mat,Vector4f vec){
+
+        float first = mat.m00*vec.x + mat.m01*vec.y + mat.m02*vec.z +mat.m03*vec.w;
+        float second = mat.m10*vec.x + mat.m11*vec.y + mat.m12*vec.z +mat.m13*vec.w;
+        float third = mat.m20*vec.x + mat.m21*vec.y + mat.m22*vec.z +mat.m23*vec.w;
+        float fourth = mat.m30*vec.x + mat.m31*vec.y + mat.m32*vec.z +mat.m33*vec.w;
+        return new Vector4f(first,second,third,fourth);
+
     }
 }
