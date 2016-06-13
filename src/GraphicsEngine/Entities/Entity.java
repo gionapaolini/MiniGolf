@@ -2,6 +2,7 @@ package GraphicsEngine.Entities;
 
 import GraphicsEngine.Model.TexturedModel;
 import GraphicsEngine.Textures.ModelTexture;
+import PhysicsEngine.TrianglePlane;
 import Toolbox.Maths;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
@@ -138,5 +139,51 @@ public class Entity {
 
     public ModelTexture getTexture(){
         return model.getTexture();
+    }
+
+    public Vector3f[] getWorldPoints(){
+        Matrix4f worldPosition = Maths.createTransformationMatrix(position,
+                rx, ry, rz, scale);
+        worldPosition.transpose();
+        float[] vertexArray = model.getVertexArray();
+
+        Vector4f[] points4 = new Vector4f[vertexArray.length/3];
+        Vector3f[] points = new Vector3f[vertexArray.length/3];
+
+        for(int i = 0; i<points.length;i++){
+            points4[i] = Maths.Vector4Matrix4Product(worldPosition,new Vector4f(vertexArray[i*3],vertexArray[i*3+1],vertexArray[i*3+2],1));
+            points[i] = new Vector3f(points4[i].x,points4[i].y,points4[i].z);
+        }
+        return points;
+    }
+
+
+
+    public TrianglePlane[] getTriangles(){
+
+        Vector3f[] worldPoints = getWorldPoints();
+
+        int[] indices = model.getIndicesArray();
+       // float[] points = model.getVertexArray();
+        TrianglePlane[] trianglePlanes = new TrianglePlane[indices.length/3];
+        /*
+        for(int i=0;i<indices.length/3;i++) {
+            System.out.println("Triangle number "+i);
+            Vector3f p1 = new Vector3f(points[indices[i*3] * 3], points[indices[i*3] * 3 + 1], points[indices[i*3] * 3 + 2]);
+            Vector3f p2 = new Vector3f(points[indices[i*3+1] * 3], points[indices[i*3+1] * 3 + 1], points[indices[i*3+1] * 3 + 2]);
+            Vector3f p3 = new Vector3f(points[indices[i*3+2] * 3], points[indices[i*3+2] * 3 + 1], points[indices[i*3+2] * 3 + 2]);
+            trianglePlanes[i] = new TrianglePlane(p1,p2,p3);
+        }
+        */
+
+        for(int i=0;i<indices.length/3;i++) {
+            System.out.println("Triangle number "+i);
+            Vector3f p1 = new Vector3f(worldPoints[indices[i*3]].x, worldPoints[indices[i*3]].y, worldPoints[indices[i*3]].z);
+            Vector3f p2 = new Vector3f(worldPoints[indices[i*3+1]].x, worldPoints[indices[i*3+1]].y, worldPoints[indices[i*3+1]].z);
+            Vector3f p3 = new Vector3f(worldPoints[indices[i*3+2]].x, worldPoints[indices[i*3+2]].y, worldPoints[indices[i*3+2]].z);
+            trianglePlanes[i] = new TrianglePlane(p1,p2,p3);
+        }
+        return trianglePlanes;
+
     }
 }

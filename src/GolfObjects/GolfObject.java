@@ -73,4 +73,6 @@ public abstract class GolfObject {
         return cor;
     }
 
+
+
 }

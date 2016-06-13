@@ -11,7 +11,7 @@ import org.lwjgl.util.vector.Vector4f;
 public class Maths {
     public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, float scale){
         Matrix4f matrix = new Matrix4f();
-        matrix.setIdentity();;
+        matrix.setIdentity();
         Matrix4f.translate(translation,matrix,matrix);
         Matrix4f.rotate((float)(Math.toRadians(rx)), new Vector3f(1,0,0), matrix,matrix);
         Matrix4f.rotate((float)(Math.toRadians(ry)), new Vector3f(0,1,0), matrix,matrix);
@@ -56,6 +56,17 @@ public class Maths {
         float third = mat.m20*vec.x + mat.m21*vec.y + mat.m22*vec.z +mat.m23*vec.w;
         float fourth = mat.m30*vec.x + mat.m31*vec.y + mat.m32*vec.z +mat.m33*vec.w;
         return new Vector4f(first,second,third,fourth);
+
+    }
+
+    public static Vector3f crossProduct(Vector3f first, Vector3f second){
+        float cx = first.y*second.z - first.z*second.y;
+
+        float cy = first.z*second.x - first.x*second.z;
+
+        float cz = first.x*second.y - first.y*second.x;
+
+        return new Vector3f(cx,cy,cz);
 
     }
 }

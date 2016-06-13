@@ -1,6 +1,7 @@
 package Tests;
 
 import GolfObjects.Ball;
+import GolfObjects.Obstacle;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
@@ -10,6 +11,7 @@ import GraphicsEngine.Model.RawModel;
 import GraphicsEngine.Model.TexturedModel;
 import GraphicsEngine.Textures.ModelTexture;
 import PhysicsEngine.Physics;
+import PhysicsEngine.TrianglePlane;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
@@ -29,34 +31,53 @@ public class Test {
         Terrain terrain = new Terrain(0,0,5,5,loader,new ModelTexture(loader.loadTexture("grassy2")));
 
         RawModel model = OBJLoader.loadObjModel("pallo", loader);
+        RawModel model1 = OBJLoader.loadObjModel("cubone", loader);
+
         ModelTexture texture1 = new ModelTexture(loader.loadTexture("white"));
         ModelTexture texture2 = new ModelTexture(loader.loadTexture("black"));
 
         TexturedModel texturedModel1 = new TexturedModel(model,texture1);
-        TexturedModel texturedModel2 = new TexturedModel(model,texture2);
+        TexturedModel texturedModel3 = new TexturedModel(model1,texture2);
 
-        Entity entity = new Entity(texturedModel1,new Vector3f(1f,2,2.5f),0,0,0,0.25f);
-        Entity entity1 = new Entity(texturedModel2,new Vector3f(2.5f,2,1f),0,0,0,0.25f);
+
+        Entity entity = new Entity(texturedModel1,new Vector3f(2.5f,0,3f),0,0,0,0.25f);
+        Entity entity2 = new Entity(texturedModel3,new Vector3f(0,0,0),0,45,0,1);
 
 
 
         Ball ball = new Ball(entity);
-        Ball ball1 = new Ball(entity1);
-        ball.setVelocity(new Vector3f(0.5f,0,0));
-        ball1.setVelocity(new Vector3f(0,0,0.5f));
+        Obstacle triangle1 = new Obstacle(entity2);
         ModelTexture red = new ModelTexture(loader.loadTexture("red"));
 
         MasterRenderer renderer = new MasterRenderer();
         float time = 0.0083f;
         Vector3f normal = new Vector3f(0,1,0);
         long last =0;
-        while (!Display.isCloseRequested()){
+        TrianglePlane triangle;
 
-            if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
-                ball.setPosition(new Vector3f(1f,2,2.5f));
-                ball1.setPosition(new Vector3f(2.5f,2,1f));
-                ball.setVelocity(new Vector3f(0.5f,0,0));
-                ball1.setVelocity(new Vector3f(0,0,0.5f));
+        TrianglePlane[] trianglePlane = triangle1.getModel().getTriangles();
+        for(int i = 0;i<trianglePlane.length;i++){
+            if(trianglePlane[i].isFrontFacingTo(new Vector3f(0,0,-1)))
+                System.out.println("Facing "+i);
+        }
+        ball.setVelocity(new Vector3f(0,0,-1));
+        while (!Display.isCloseRequested()){
+            /*if(Physics.checkBroadCollision(ball,triangle1))
+                System.out.println(Physics.checkTriangle(ball,triangle));
+                */
+            Physics.setNewPosition(ball,time);
+
+            //   points = entity2.getWorldPoints();
+           // triangle = new TrianglePlane(points[0],points[1],points[2]);
+
+          //  entity2.setRz(entity2.getRz()+0.5f);
+
+
+            if(Keyboard.isKeyDown(Keyboard.KEY_V)){
+                ball.setVelocity(new Vector3f(0,0,-1));
+            }
+            if(Keyboard.isKeyDown(Keyboard.KEY_B)){
+                ball.setVelocity(new Vector3f(0,0,1));
             }
 
             if(Keyboard.isKeyDown(Keyboard.KEY_ADD)){
@@ -66,36 +87,12 @@ public class Test {
                 time-=0.0001;
             }
 
-            if(Physics.checkBroadCollision(ball,ball1)){
-                System.out.println("Colliding");
-                ball.setCollideColor(red);
-                ball1.setCollideColor(red);
-            }else {
-                ball.unsetCollideColor();
-                ball1.unsetCollideColor();
-
-            }
-
-            Physics.applyGravity(ball, time);
-            if(ball.getPosition().y<=0)
-                Physics.applyCollision(ball, normal, time);
-            Physics.setNewPosition(ball, time);
-
-            Physics.applyGravity(ball1, time);
-            if(ball.getPosition().y<=0)
-                Physics.applyCollision(ball1, normal, time);
-            Physics.setNewPosition(ball1, time);
-
-            if(ball.getPosition().x<2.55 && ball.getPosition().x>2.45 && System.currentTimeMillis()-last>1000){
-                Physics.applyCollision(ball, ball1, new Vector3f(0,0,-1), time);
-                last = System.currentTimeMillis();
-            }
 
             camera.moveOnSight();
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(entity);
-            renderer.processEntity(entity1);
+            renderer.processEntity(entity2);
 
 
             DisplayManager.updateDisplay();

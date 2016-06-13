@@ -25,7 +25,7 @@ public class Loader {
 
     public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices){
         int vaoID = createVAO();
-        bindIndicecBuffer(indices);
+        bindIndicesBuffer(indices);
         storeDataInAttributeList(0,3,positions);
         storeDataInAttributeList(1,2,textureCoords);
         storeDataInAttributeList(2,3,normals);
@@ -81,7 +81,7 @@ public class Loader {
         GL30.glBindVertexArray(0);
     }
 
-    private void bindIndicecBuffer(int[] indices){
+    private void bindIndicesBuffer(int[] indices){
         int vboID = GL15.glGenBuffers();
         vbos.add(vboID);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID);

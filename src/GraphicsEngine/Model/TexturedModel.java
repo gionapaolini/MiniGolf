@@ -33,4 +33,7 @@ public class TexturedModel {
     public float[] getNormalsArray(){
         return rawModel.getNormalsArray();
     }
+    public int[] getIndicesArray(){
+        return rawModel.getIndicesArray();
+    }
 }
