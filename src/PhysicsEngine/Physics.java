@@ -15,6 +15,7 @@ public class Physics {
     public static void applyGravity(GolfObject obj, float time){
         Vector3f vel = obj.getVelocity();
         obj.setVelocity(new Vector3f(vel.x,(float)(vel.y-(9.8*time)),vel.z));
+        setNewPosition(obj,time);
     }
 
     public static void setNewPosition(GolfObject obj, float time){
@@ -23,20 +24,17 @@ public class Physics {
         obj.setPosition(new Vector3f((float)(position.x+(vel.x*time)),(float)Math.max(position.y+(vel.y*time),0),(float)(position.z+(vel.z*time))));
     }
 
-    public static Vector3f pointCollision(GolfObject obj1, GolfObject obj2){
-        //Discard points checking the direction
-        return new Vector3f(0,0,0);
-    }
-
     public static void applyCollision(GolfObject obj, Vector3f normals, float time){
         Vector3f vel = obj.getVelocity();
         float dot = Maths.dot(vel,normals);
         Vector3f normalProc = Maths.scalarProduct(Maths.scalarProduct(normals,(1+obj.getCor())), dot);
         Vector3f newVel = Maths.vector3SUB(vel, normalProc);
         obj.setVelocity(newVel);
+        setNewPosition(obj,time);
+
     }
 
-    public static void applyCollision(GolfObject obj, GolfObject obj2, Vector3f normals, float time){
+    public static void applyCollisionBall(GolfObject obj, GolfObject obj2, Vector3f normals, float time){
         Vector3f vel1 = obj.getVelocity();
         Vector3f vel2 = obj2.getVelocity();
 
@@ -50,6 +48,7 @@ public class Physics {
     public static boolean checkBroadCollision(GolfObject en1, GolfObject en2){
         Vector3f[] obsBound1 = en1.getWorldProjectionPoint();
         Vector3f[] obsBound2 = en2.getWorldProjectionPoint();
+
 
         Vector2f[] axis = new Vector2f[4];
         axis[0] = new Vector2f(obsBound1[1].x - obsBound1[0].x,obsBound1[1].z - obsBound1[0].z);
@@ -69,6 +68,7 @@ public class Physics {
                 projectionSQ2[i].y = (float) (((obsBound2[i].x * axis[j].x) + (obsBound2[i].z * axis[j].y)) / (Math.pow(axis[j].x, 2) + Math.pow(axis[j].y, 2)) * axis[j].y);
 
             }
+
 
 
 
@@ -101,86 +101,52 @@ public class Physics {
 
     }
 
+    public static long collision(GolfObject obj1, GolfObject obj2, float time, long lastCall){
+        if(checkBroadCollision(obj1,obj2) && System.currentTimeMillis()-lastCall>10){
+            System.out.println("COO");
+            Vector3f vel = obj1.getVelocity();
+            Vector3f normalVel = new Vector3f(vel.x,vel.y,vel.z);
+            normalVel.normalise();
+            TrianglePlane[] trianglePlanes = obj2.getModel().getTriangles();
 
-    public static boolean checkTriangle(GolfObject obj,TrianglePlane triangle) {
-        Vector3f normVel = new Vector3f();
-        obj.getVelocity().normalise(normVel);
-
-        if (triangle.isFrontFacingTo(normVel)){
-
-
-            // Get interval of plane intersection:
-            double t0, t1;
-            boolean embeddedInPlane = false;
-            double signedDistToTrianglePlane =triangle.signedDistanceTo(obj.getPosition());
-            float normalDotVelocity =Maths.dot(triangle.normal,obj.getVelocity());
-            if (normalDotVelocity == 0.0f) {
-                if (Math.abs(signedDistToTrianglePlane) >= 1.0f) {
-                    return false;
+            float closer = 1000;
+            Vector3f normal = null;
+            for(int i=0;i<trianglePlanes.length;i++){
+                System.out.println("Triangle n "+(i+1)+" Normal: "+trianglePlanes[i].normal);
+                if(trianglePlanes[i].isFrontFacingTo(normalVel)){
+                    //System.out.println("YOOOO");
+                    float d = checkDistanceTriangle(obj1,trianglePlanes[i]);
+                    //System.out.println("Normal: "+trianglePlanes[i].normal+": "+d);
+                    if(d<closer && d>=0){
+                        closer = d;
+                        normal = trianglePlanes[i].normal;
+                    }
                 }
-                else {
-                    embeddedInPlane = true;
-                    t0 = 0.0;
-                    t1 = 1.0;
-                }
-
-            }else {
-                t0=(-1.0-signedDistToTrianglePlane)/normalDotVelocity;
-                t1=( 1.0-signedDistToTrianglePlane)/normalDotVelocity;
-                if (t0 > t1) {
-                    double temp = t1;
-                    t1 = t0;
-                    t0 = temp;
-                }
-                if (t0 > 1.0f || t1 < 0.0f) {
-                    return false;
-                }
-                if (t0 < 0.0) t0 = 0.0;
-                if (t1 > 1.0) t1 = 1.0;
             }
 
-            Vector3f collisionPoint;
-            boolean foundCollison = false;
-            float t = 1.0f;
+            System.out.println("NORMALVEL: "+normalVel);
+            System.out.println("NORMAL: "+normal);
 
-            if (!embeddedInPlane) {
 
-                Vector3f t0Vel = new Vector3f(obj.getVelocity().x,obj.getVelocity().y,obj.getVelocity().z);
-                t0Vel.scale((float) t0);
 
-                Vector3f planeIntersectionPoint =Maths.vector3SUM(Maths.vector3SUB(obj.getPosition(),triangle.normal),  t0Vel);
-                if (checkPointInTriangle(planeIntersectionPoint,triangle.p1,triangle.p2,triangle.p3))
-                {
-                    System.out.println("FOUND COLLISION");
+            applyCollision(obj1, normal, time);
+            lastCall = System.currentTimeMillis();
 
-                    foundCollison = true;
-                    t = (float) t0;
-                    collisionPoint = planeIntersectionPoint;
-                    return true;
-                }
 
-            }
         }
-        return false;
+
+        return lastCall;
 
     }
 
 
-    public static boolean checkPointInTriangle(Vector3f point, Vector3f pa, Vector3f pb, Vector3f pc){
 
-        Vector3f e10=Maths.vector3SUB(pb,pa);
-        Vector3f e20=Maths.vector3SUB(pc,pa);
-        float a = Vector3f.dot(e10,e10);
-        float b = Vector3f.dot(e10,e20);
-        float c = Vector3f.dot(e20,e20);
-        float ac_bb=(a*c)-(b*b);
-        Vector3f vp = new Vector3f(point.x-pa.x, point.y-pa.y, point.z-pa.z);
-        float d = Vector3f.dot(vp,e10);
-        float e = Vector3f.dot(vp,e20);
-        float x = (d*c)-(e*b);
-        float y = (e*a)-(d*b);
-        float z = x+y-ac_bb;
-        return z < 0 && x >= 0 && y >= 0;
+    public static float checkDistanceTriangle(GolfObject obj,TrianglePlane triangle) {
+
+        return Vector3f.dot(Maths.vector3SUB(obj.getPosition(),triangle.p1),triangle.normal);
 
     }
+
+
+
 }

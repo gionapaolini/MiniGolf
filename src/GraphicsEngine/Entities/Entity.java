@@ -177,7 +177,6 @@ public class Entity {
         */
 
         for(int i=0;i<indices.length/3;i++) {
-            System.out.println("Triangle number "+i);
             Vector3f p1 = new Vector3f(worldPoints[indices[i*3]].x, worldPoints[indices[i*3]].y, worldPoints[indices[i*3]].z);
             Vector3f p2 = new Vector3f(worldPoints[indices[i*3+1]].x, worldPoints[indices[i*3+1]].y, worldPoints[indices[i*3+1]].z);
             Vector3f p3 = new Vector3f(worldPoints[indices[i*3+2]].x, worldPoints[indices[i*3+2]].y, worldPoints[indices[i*3+2]].z);

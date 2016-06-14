@@ -17,17 +17,13 @@ public class TrianglePlane {
         Vector3f p3p1sub = Maths.vector3SUB(p3,p1);
         normal = Maths.crossProduct(p2p1sub,p3p1sub);
         normal.normalise();
-        if(Math.abs(normal.x)<0.00001)
+        if(Math.abs(normal.x)<0.001)
             normal.x = 0;
-        if(Math.abs(normal.y)<0.00001)
+        if(Math.abs(normal.y)<0.001)
             normal.y = 0;
-        if(Math.abs(normal.z)<0.00001)
+        if(Math.abs(normal.z)<0.001)
             normal.z = 0;
 
-        System.out.println(p1);
-        System.out.println(p2);
-        System.out.println(p3);
-        System.out.println("Normal: "+normal);
 
         origin = p1;
         equation = new float[4];

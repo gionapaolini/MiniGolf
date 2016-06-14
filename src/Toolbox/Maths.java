@@ -69,4 +69,8 @@ public class Maths {
         return new Vector3f(cx,cy,cz);
 
     }
+
+    public static float distancePoints(Vector3f p1,Vector3f p2){
+        return (float) Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
+    }
 }
