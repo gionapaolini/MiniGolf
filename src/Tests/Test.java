@@ -31,7 +31,7 @@ public class Test {
         Terrain terrain = new Terrain(0,0,5,5,loader,new ModelTexture(loader.loadTexture("grassy2")));
 
         RawModel model = OBJLoader.loadObjModel("pallo", loader);
-        RawModel model1 = OBJLoader.loadObjModel("provona", loader);
+        RawModel model1 = OBJLoader.loadObjModel("slope2", loader);
 
         ModelTexture texture1 = new ModelTexture(loader.loadTexture("white"));
         ModelTexture texture2 = new ModelTexture(loader.loadTexture("red"));
@@ -40,28 +40,38 @@ public class Test {
         TexturedModel texturedModel3 = new TexturedModel(model1,texture2);
 
 
-        Entity entity = new Entity(texturedModel1,new Vector3f(0,2,3f),0,0,0,0.25f);
-        Entity entity2 = new Entity(texturedModel3,new Vector3f(1f,0,3),0,90,0,0.25f);
-
+        Entity entity = new Entity(texturedModel1,new Vector3f(4.325f,0,5f),0,0,0,0.25f);
+        Entity entity2 = new Entity(texturedModel3,new Vector3f(0,0,0),0,0,0,1f);
+        Entity entity3 = new Entity(texturedModel3,new Vector3f(5f,0,3),0,-90,0,0.25f);
 
 
         Ball ball = new Ball(entity);
         Obstacle triangle1 = new Obstacle(entity2);
+        Obstacle triangle2 = new Obstacle(entity3);
         ModelTexture red = new ModelTexture(loader.loadTexture("red"));
 
         MasterRenderer renderer = new MasterRenderer();
         float time = 0.0083f;
         Vector3f normal = new Vector3f(0,1,0);
 
-        ball.setVelocity(new Vector3f(1,0,0));
+
+        ball.setVelocity(new Vector3f(0,0,1));
+        ball.setPosition(new Vector3f(1,0,-4));
         long lastCall = 0;
         while (!Display.isCloseRequested()){
             Physics.applyGravity(ball,time);
             if(ball.getPosition().y<=0){
                 Physics.applyCollision(ball, normal, time);
+                //Physics.applyFriction(ball,normal,time);
+            }
+
+            if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
+                ball.setVelocity(new Vector3f(3f, -0.5f,0));
+                ball.setPosition(new Vector3f(-1.7f,2.3f,0.2f));
             }
 
             lastCall = Physics.collision(ball,triangle1,time,lastCall);
+            lastCall = Physics.collision(ball,triangle2,time,lastCall);
             Physics.setNewPosition(ball,time);
             if(Keyboard.isKeyDown(Keyboard.KEY_ADD)){
                 time+=0.0001;
@@ -76,6 +86,7 @@ public class Test {
             renderer.processTerrain(terrain);
             renderer.processEntity(entity);
             renderer.processEntity(entity2);
+            renderer.processEntity(entity3);
 
 
             DisplayManager.updateDisplay();

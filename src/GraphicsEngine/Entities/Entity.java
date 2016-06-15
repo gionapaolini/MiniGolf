@@ -16,7 +16,7 @@ public class Entity {
     private Vector3f position;
     private float rx,ry,rz;
     private float scale;
-    private Vector4f[] squarePoints;
+    public Vector4f[] squarePoints;
     private Vector3f[] worldProjectionPoints;
 
     public Entity(TexturedModel model, Vector3f position, float rx, float ry, float rz, float scale) {
@@ -36,15 +36,15 @@ public class Entity {
         float minZ = 100;
         float maxZ = -100;
 
-        for(int i = 0; i<vertexArray.length/3; i+=3){
-            if(vertexArray[i]<minX)
-                minX = vertexArray[i];
-            if(vertexArray[i]>maxX)
-                maxX = vertexArray[i];
-            if(vertexArray[i+2]<minZ)
-                minZ = vertexArray[i+2];
-            if(vertexArray[i+2]>maxZ)
-                maxZ = vertexArray[i+2];
+        for(int i=0;i<vertexArray.length/3;i++){
+            if(vertexArray[i*3]<minX)
+                minX = vertexArray[i*3];
+            if(vertexArray[i*3]>maxX)
+                maxX = vertexArray[i*3];
+            if(vertexArray[i*3+2]<minZ)
+                minZ = vertexArray[i*3+2];
+            if(vertexArray[i*3+2]>maxZ)
+                maxZ = vertexArray[i*3+2];
         }
 
         squarePoints = new Vector4f[4];
@@ -157,6 +157,26 @@ public class Entity {
         return points;
     }
 
+    public float getHighestPoint(){
+        Vector3f[] worldPoints = getWorldPoints();
+        float highest = -1000;
+        for (int i = 0; i<worldPoints.length;i++){
+            if(worldPoints[i].y>highest)
+                highest = worldPoints[i].y;
+        }
+        return highest;
+    }
+    public float getLowestPoint(){
+
+        Vector3f[] worldPoints = getWorldPoints();
+        float lowest = 1000;
+        for (int i = 0; i<worldPoints.length;i++){
+            if(worldPoints[i].y<lowest)
+                lowest = worldPoints[i].y;
+        }
+        return lowest;
+
+    }
 
 
     public TrianglePlane[] getTriangles(){
@@ -164,17 +184,7 @@ public class Entity {
         Vector3f[] worldPoints = getWorldPoints();
 
         int[] indices = model.getIndicesArray();
-       // float[] points = model.getVertexArray();
         TrianglePlane[] trianglePlanes = new TrianglePlane[indices.length/3];
-        /*
-        for(int i=0;i<indices.length/3;i++) {
-            System.out.println("Triangle number "+i);
-            Vector3f p1 = new Vector3f(points[indices[i*3] * 3], points[indices[i*3] * 3 + 1], points[indices[i*3] * 3 + 2]);
-            Vector3f p2 = new Vector3f(points[indices[i*3+1] * 3], points[indices[i*3+1] * 3 + 1], points[indices[i*3+1] * 3 + 2]);
-            Vector3f p3 = new Vector3f(points[indices[i*3+2] * 3], points[indices[i*3+2] * 3 + 1], points[indices[i*3+2] * 3 + 2]);
-            trianglePlanes[i] = new TrianglePlane(p1,p2,p3);
-        }
-        */
 
         for(int i=0;i<indices.length/3;i++) {
             Vector3f p1 = new Vector3f(worldPoints[indices[i*3]].x, worldPoints[indices[i*3]].y, worldPoints[indices[i*3]].z);

@@ -33,6 +33,18 @@ public class Physics {
         setNewPosition(obj,time);
 
     }
+/*
+    public static void applyFriction(GolfObject obj, float time){
+
+        Vector3f vel = obj.getVelocity();
+        Vector3f normals =
+        Vector3f friction = new Vector3f(normals.x,normals.y,normals.z);
+        friction.scale(1);
+        obj.setVelocity(new Vector3f((float)(vel.x-(friction.x*time)),(float)(vel.y-(friction.y*time)),(float)(vel.z-(friction.z*time))));
+        setNewPosition(obj,time);
+
+    }
+    */
 
     public static void applyCollisionBall(GolfObject obj, GolfObject obj2, Vector3f normals, float time){
         Vector3f vel1 = obj.getVelocity();
@@ -48,6 +60,16 @@ public class Physics {
     public static boolean checkBroadCollision(GolfObject en1, GolfObject en2){
         Vector3f[] obsBound1 = en1.getWorldProjectionPoint();
         Vector3f[] obsBound2 = en2.getWorldProjectionPoint();
+        float max1 = en1.getModel().getHighestPoint();
+        float max2 = en2.getModel().getHighestPoint();
+        float min1 = en1.getModel().getLowestPoint();
+        float min2 = en2.getModel().getLowestPoint();
+
+        if(!(max2<max1 && max2>min1 || max1<max2 && max1>min2)){
+
+            return false;
+        }
+
 
 
         Vector2f[] axis = new Vector2f[4];
@@ -55,6 +77,7 @@ public class Physics {
         axis[1] = new Vector2f(obsBound1[1].x - obsBound1[3].x,obsBound1[1].z - obsBound1[3].z);
         axis[2] = new Vector2f(obsBound2[0].x - obsBound2[2].x,obsBound2[0].z - obsBound2[2].z);
         axis[3] = new Vector2f(obsBound2[0].x - obsBound2[1].x,obsBound2[0].z - obsBound2[1].z);
+
         for(int j = 0;j<axis.length;j++) {
             Vector2f[] projectionSQ1 = new Vector2f[4];
             Vector2f[] projectionSQ2 = new Vector2f[4];
@@ -102,8 +125,7 @@ public class Physics {
     }
 
     public static long collision(GolfObject obj1, GolfObject obj2, float time, long lastCall){
-        if(checkBroadCollision(obj1,obj2) && System.currentTimeMillis()-lastCall>10){
-            System.out.println("COO");
+        if(checkBroadCollision(obj1,obj2) && System.currentTimeMillis()-lastCall>1/time*0.0084){
             Vector3f vel = obj1.getVelocity();
             Vector3f normalVel = new Vector3f(vel.x,vel.y,vel.z);
             normalVel.normalise();
@@ -112,12 +134,11 @@ public class Physics {
             float closer = 1000;
             Vector3f normal = null;
             for(int i=0;i<trianglePlanes.length;i++){
-                System.out.println("Triangle n "+(i+1)+" Normal: "+trianglePlanes[i].normal);
-                if(trianglePlanes[i].isFrontFacingTo(normalVel)){
-                    //System.out.println("YOOOO");
+                if(trianglePlanes[i].normal.y>=0 && trianglePlanes[i].isFrontFacingTo(normalVel)){
                     float d = checkDistanceTriangle(obj1,trianglePlanes[i]);
-                    //System.out.println("Normal: "+trianglePlanes[i].normal+": "+d);
-                    if(d<closer && d>=0){
+                    d = Math.abs(d);
+                    System.out.println("Normal: "+trianglePlanes[i].normal+"Distance: "+d);
+                    if(d<closer && d>=0 && d<0.02){
                         closer = d;
                         normal = trianglePlanes[i].normal;
                     }
@@ -128,8 +149,10 @@ public class Physics {
             System.out.println("NORMAL: "+normal);
 
 
-
-            applyCollision(obj1, normal, time);
+            if(normal!=null) {
+                applyCollision(obj1, normal, time);
+                System.out.println("Applied");
+            }
             lastCall = System.currentTimeMillis();
 
 
