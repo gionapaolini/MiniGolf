@@ -1,20 +1,31 @@
 package Tests;
 
+import CourseDesigner.ControlGui;
 import GolfObjects.Ball;
 import GolfObjects.Obstacle;
+import GolfObjects.PutHole;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
 import GraphicsEngine.Entities.Terrain;
+import GraphicsEngine.Guis.GuiCourseCreator;
+import GraphicsEngine.Guis.GuiRenderer;
+import GraphicsEngine.Guis.GuiTexture;
 import GraphicsEngine.RenderEngine.*;
 import GraphicsEngine.Model.RawModel;
 import GraphicsEngine.Model.TexturedModel;
 import GraphicsEngine.Textures.ModelTexture;
 import PhysicsEngine.Physics;
-import PhysicsEngine.TrianglePlane;
+import Toolbox.Maths;
+import Toolbox.MousePicker;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by giogio on 04/06/16.
@@ -28,71 +39,47 @@ public class Test {
         Loader loader = new Loader();
         Light light = new Light(new Vector3f(0,20,0),new Vector3f(1,1,1));
         Camera camera = new Camera();
-        Terrain terrain = new Terrain(0,0,5,5,loader,new ModelTexture(loader.loadTexture("grassy2")));
-
-        RawModel model = OBJLoader.loadObjModel("pallo", loader);
-        RawModel model1 = OBJLoader.loadObjModel("slope2", loader);
-
-        ModelTexture texture1 = new ModelTexture(loader.loadTexture("white"));
-        ModelTexture texture2 = new ModelTexture(loader.loadTexture("red"));
-
-        TexturedModel texturedModel1 = new TexturedModel(model,texture1);
-        TexturedModel texturedModel3 = new TexturedModel(model1,texture2);
-
-
-        Entity entity = new Entity(texturedModel1,new Vector3f(4.325f,0,5f),0,0,0,0.25f);
-        Entity entity2 = new Entity(texturedModel3,new Vector3f(0,0,0),0,0,0,1f);
-        Entity entity3 = new Entity(texturedModel3,new Vector3f(5f,0,3),0,-90,0,0.25f);
-
-
-        Ball ball = new Ball(entity);
-        Obstacle triangle1 = new Obstacle(entity2);
-        Obstacle triangle2 = new Obstacle(entity3);
-        ModelTexture red = new ModelTexture(loader.loadTexture("red"));
+        Terrain terrain = new Terrain(0,0,15,15,loader,new ModelTexture(loader.loadTexture("grassy2")));
 
         MasterRenderer renderer = new MasterRenderer();
-        float time = 0.0083f;
-        Vector3f normal = new Vector3f(0,1,0);
+
+        MousePicker picker = new MousePicker(camera,renderer.getProjectionMatrix(), terrain);
+
+        GuiCourseCreator guiCourseCreator = new GuiCourseCreator(loader);
+
+        ModelTexture black = new ModelTexture(loader.loadTexture("black"));
 
 
-        ball.setVelocity(new Vector3f(0,0,1));
-        ball.setPosition(new Vector3f(1,0,-4));
-        long lastCall = 0;
+        PutHole putHole = new PutHole(new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole", loader),black),new Vector3f(0,0,0),0,0,0,1));
+
+
+        List<Ball> balls = new ArrayList<Ball>();
+        List<Obstacle> obstacles = new ArrayList<Obstacle>();
+
+
+        ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,camera,picker);
+
+
         while (!Display.isCloseRequested()){
-            Physics.applyGravity(ball,time);
-            if(ball.getPosition().y<=0){
-                Physics.applyCollision(ball, normal, time);
-                //Physics.applyFriction(ball,normal,time);
-            }
-
-            if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
-                ball.setVelocity(new Vector3f(3f, -0.5f,0));
-                ball.setPosition(new Vector3f(-1.7f,2.3f,0.2f));
-            }
-
-            lastCall = Physics.collision(ball,triangle1,time,lastCall);
-            lastCall = Physics.collision(ball,triangle2,time,lastCall);
-            Physics.setNewPosition(ball,time);
-            if(Keyboard.isKeyDown(Keyboard.KEY_ADD)){
-                time+=0.0001;
-            }
-            if(Keyboard.isKeyDown(Keyboard.KEY_SUBTRACT)){
-                time-=0.0001;
-            }
-
-
             camera.moveOnSight();
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
-            renderer.processEntity(entity);
-            renderer.processEntity(entity2);
-            renderer.processEntity(entity3);
+            guiCourseCreator.render();
+            controlGui.controls();
+            for(Ball ball: balls){
+                renderer.processEntity(ball.getModel());
+            }
+            for(Obstacle obstacle: obstacles){
+                renderer.processEntity(obstacle.getModel());
+            }
+            renderer.processEntity(putHole.getModel());
 
 
             DisplayManager.updateDisplay();
         }
         loader.cleanUp();
         renderer.cleanUp();
+        guiCourseCreator.cleanUp();
         DisplayManager.closeDisplay();
 
 

@@ -80,6 +80,7 @@ public class Entity {
     public Vector3f[] getWorldProjectionPoints(){
         return worldProjectionPoints;
     }
+    public Vector4f[] getProjectionPoints(){return squarePoints;}
     public void setTexture(ModelTexture texture){
         model.setTexture(texture);
     }

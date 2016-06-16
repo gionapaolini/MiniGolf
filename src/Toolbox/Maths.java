@@ -2,6 +2,7 @@ package Toolbox;
 
 import GraphicsEngine.Entities.Camera;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
@@ -20,6 +21,14 @@ public class Maths {
 
         return matrix;
 
+    }
+
+    public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
+        Matrix4f matrix = new Matrix4f();
+        matrix.setIdentity();
+        Matrix4f.translate(translation, matrix, matrix);
+        Matrix4f.scale(new Vector3f(scale.x, scale.y, 1f), matrix, matrix);
+        return matrix;
     }
 
     public static Matrix4f createViewMatrix(Camera camera) {
@@ -73,4 +82,6 @@ public class Maths {
     public static float distancePoints(Vector3f p1,Vector3f p2){
         return (float) Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
     }
+
+
 }

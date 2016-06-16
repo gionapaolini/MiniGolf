@@ -3,6 +3,7 @@ package GolfObjects;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Textures.ModelTexture;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 /**
  * Created by giogio on 04/06/16.
@@ -73,6 +74,9 @@ public abstract class GolfObject {
         return cor;
     }
 
+    public Vector4f[] getProjectionPoints(){
+        return model.getProjectionPoints();
+    }
 
 
 }
