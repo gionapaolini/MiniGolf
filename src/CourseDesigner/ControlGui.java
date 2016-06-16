@@ -358,7 +358,7 @@ public class ControlGui {
 
     private void attachNewCube(){
         if(cubeModel==null) {
-            cubeModel = OBJLoader.loadObjModel("cube", loader);
+            cubeModel = OBJLoader.loadObjModel("cube2", loader);
         }
         TexturedModel model = new TexturedModel(cubeModel,white);
         Entity n = new Entity(model,new Vector3f(0,0,0),0,0,0,1);
