@@ -26,4 +26,14 @@ public class TexturedModel {
     public void setTexture(ModelTexture text){
         this.texture = text;
     }
+
+    public float[] getVertexArray(){
+        return rawModel.getVerticesArray();
+    }
+    public float[] getNormalsArray(){
+        return rawModel.getNormalsArray();
+    }
+    public int[] getIndicesArray(){
+        return rawModel.getIndicesArray();
+    }
 }

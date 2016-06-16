@@ -56,6 +56,7 @@ public class OBJLoader {
                 }
             }
 
+
             while (line!=null){
                 if(!line.startsWith("f ")){
                     line = reader.readLine();
@@ -81,20 +82,29 @@ public class OBJLoader {
         verticesArray = new float[vertices.size()*3];
         indicesArray = new int[indices.size()];
 
+
+
         int vertexPointer = 0;
         for(Vector3f vertex: vertices){
             verticesArray[vertexPointer++] = vertex.x;
             verticesArray[vertexPointer++] = vertex.y;
             verticesArray[vertexPointer++] = vertex.z;
-
         }
+
+
+
+
 
         for(int i=0;i<indices.size();i++){
             indicesArray[i] = indices.get(i);
         }
-        return loader.loadToVAO(verticesArray,textureArray, normalsArray,indicesArray);
 
+        RawModel model =loader.loadToVAO(verticesArray,textureArray, normalsArray,indicesArray);
 
+        model.setVerticesArray(verticesArray);
+        model.setNormalsArray(normalsArray);
+        model.setIndicesArray(indicesArray);
+        return model;
     }
 
     private static void processVertex(String[] vertexData, List<Integer> indices,

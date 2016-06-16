@@ -7,6 +7,9 @@ public class RawModel {
 
     private int vaoID;
     private int vertexCount;
+    private float[] verticesArray;
+    private float[] normalsArray;
+    private int[] indicesArray;
 
     public RawModel(int vaoID, int vertexCount){
         this.vaoID = vaoID;
@@ -19,5 +22,29 @@ public class RawModel {
 
     public int getVertexCount() {
         return vertexCount;
+    }
+
+    public float[] getVerticesArray() {
+        return verticesArray;
+    }
+
+    public void setVerticesArray(float[] verticesArray) {
+        this.verticesArray = verticesArray;
+    }
+
+    public float[] getNormalsArray() {
+        return normalsArray;
+    }
+
+    public void setNormalsArray(float[] normalsArray) {
+        this.normalsArray = normalsArray;
+    }
+
+    public int[] getIndicesArray() {
+        return indicesArray;
+    }
+
+    public void setIndicesArray(int[] indicesArray) {
+        this.indicesArray = indicesArray;
     }
 }
