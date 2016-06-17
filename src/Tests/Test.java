@@ -39,7 +39,7 @@ public class Test {
         Loader loader = new Loader();
         Light light = new Light(new Vector3f(0,20,0),new Vector3f(1,1,1));
         Camera camera = new Camera();
-        Terrain terrain = new Terrain(0,0,15,15,loader,new ModelTexture(loader.loadTexture("grassy2")));
+        Terrain terrain = new Terrain(-10,-10,20,20,loader,new ModelTexture(loader.loadTexture("grassy2")));
 
         MasterRenderer renderer = new MasterRenderer();
 
@@ -50,7 +50,7 @@ public class Test {
         ModelTexture black = new ModelTexture(loader.loadTexture("black"));
 
 
-        PutHole putHole = new PutHole(new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole", loader),black),new Vector3f(0,0,0),0,0,0,1));
+        PutHole putHole = new PutHole(new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole", loader),black),new Vector3f(-1,0,0),0,0,0,1));
 
 
         List<Ball> balls = new ArrayList<Ball>();

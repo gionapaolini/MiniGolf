@@ -8,27 +8,28 @@ import org.lwjgl.util.vector.Vector3f;
  * Created by giogio on 05/06/16.
  */
 public class Camera {
-    private Vector3f position = new Vector3f(2.5f,5,8);
+    private Vector3f position = new Vector3f(0,10,12);
     private float lx =0;
     private float ly =0;
     private float lz =-1;
     private float pitch=40;
     private float yaw;
     private float roll;
-
+    private float increment = 0.4f;
 
 
     public void moveOnSight(){
+
         if(Keyboard.isKeyDown(Keyboard.KEY_W)){
-            position.x +=0.02f * lx;
-            position.y +=0.02f * ly;
-            position.z +=0.02f * lz;
+            position.x +=increment * lx;
+            position.y +=increment* ly;
+            position.z +=increment * lz;
 
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_S)){
-            position.x -=0.02f * lx;
-            position.y -=0.02f * ly;
-            position.z -=0.02f * lz;
+            position.x -=increment * lx;
+            position.y -=increment * ly;
+            position.z -=increment * lz;
         }
         if(Mouse.isButtonDown(0)){
             yaw-=Mouse.getDX()/10;
@@ -39,40 +40,40 @@ public class Camera {
         }
 
         if(Keyboard.isKeyDown(Keyboard.KEY_D)){
-            position.x+=0.02f*(-lz);
-            position.z+=0.02f*(lx);
+            position.x+=increment*(-lz);
+            position.z+=increment*(lx);
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_A)){
-            position.x-=0.02f*(-lz);
-            position.z-=0.02f*(lx);
+            position.x-=increment*(-lz);
+            position.z-=increment*(lx);
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_Q)){
-            position.y +=0.02;
+            position.y +=increment;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_E)){
-            position.y -=0.02;
+            position.y -=increment;
         }
 
     }
 
     public void movePositions(){
         if(Keyboard.isKeyDown(Keyboard.KEY_W)){
-            position.z -=0.02f;
+            position.z -=increment;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_S)){
-            position.z +=0.02f;
+            position.z +=increment;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_A)){
-            position.x -=0.02f;
+            position.x -=increment;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_D)){
-            position.x +=0.02f;
+            position.x +=increment;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_Q)){
-            position.y +=0.02;
+            position.y +=increment;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_E)){
-            position.y -=0.02;
+            position.y -=increment;
         }
         if(Mouse.isButtonDown(0)){
             yaw-=Mouse.getDX()/10;

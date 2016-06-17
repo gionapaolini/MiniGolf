@@ -138,7 +138,7 @@ public class Physics {
                     float d = checkDistanceTriangle(obj1,trianglePlanes[i]);
                     d = Math.abs(d);
                     System.out.println("Normal: "+trianglePlanes[i].normal+"Distance: "+d);
-                    if(d<closer && d>=0 && d<0.02){
+                    if(d<closer && d>=0 && d<0.05){
                         closer = d;
                         normal = trianglePlanes[i].normal;
                     }
