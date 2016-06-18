@@ -9,19 +9,15 @@ import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
 import GraphicsEngine.Entities.Terrain;
 import GraphicsEngine.Guis.GuiCourseCreator;
-import GraphicsEngine.Guis.GuiRenderer;
-import GraphicsEngine.Guis.GuiTexture;
+
 import GraphicsEngine.RenderEngine.*;
-import GraphicsEngine.Model.RawModel;
 import GraphicsEngine.Model.TexturedModel;
 import GraphicsEngine.Textures.ModelTexture;
-import PhysicsEngine.Physics;
-import Toolbox.Maths;
+
 import Toolbox.MousePicker;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+
 import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
+
 import org.lwjgl.util.vector.Vector3f;
 
 import java.util.ArrayList;
@@ -30,7 +26,7 @@ import java.util.List;
 /**
  * Created by giogio on 04/06/16.
  */
-public class Test {
+public class TestCourseDesigner {
 
     public static void main(String[] args){
 

@@ -1,5 +1,6 @@
 package GraphicsEngine.Entities;
 
+import GameEngine.Player;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
@@ -14,9 +15,74 @@ public class Camera {
     private float lz =-1;
     private float pitch=40;
     private float yaw;
-    private float roll;
     private float increment = 0.4f;
 
+    private float distanceFromPlayer;
+    private float angleAroundPlayer;
+    private Player currentPlayer;
+    public boolean playing;
+
+    public Camera(Player player){
+        currentPlayer = player;
+        distanceFromPlayer = 10;
+        playing = true;
+    }
+    public Camera(){
+        playing = false;
+    }
+    private void calculateZoom(){
+        float zoomLevel = Mouse.getDWheel() * 0.01f;
+        if(distanceFromPlayer-zoomLevel>3f)
+             distanceFromPlayer -= zoomLevel;
+
+    }
+    private void calculateAngles(){
+        if(Mouse.isButtonDown(0)){
+            float pitchChange = Mouse.getDY()*0.1f;
+            pitch -= pitchChange;
+            float angleChange = Mouse.getDX()*0.3f;
+            angleAroundPlayer-=angleChange;
+
+
+        }
+    }
+
+    private float calculateHorizontalDistance(){
+        return (float) (distanceFromPlayer*Math.cos(Math.toRadians(pitch)));
+    }
+    private float calculateVerticalDistance(){
+        return (float) (distanceFromPlayer*Math.sin(Math.toRadians(pitch)));
+    }
+
+    private void calculateCameraPosition(float horizontal,float vertical){
+        position.y = currentPlayer.getBall().getPosition().y +vertical;
+        float theta = currentPlayer.getBall().getModel().getRy() + angleAroundPlayer;
+        float offsetX = (float) (horizontal * Math.sin(Math.toRadians(theta)));
+        float offsetZ = (float) (horizontal * Math.cos(Math.toRadians(theta)));
+
+        position.x = currentPlayer.getBall().getPosition().x - offsetX;
+        position.z = currentPlayer.getBall().getPosition().z - offsetZ;
+    }
+
+    public void move(){
+        if(playing)
+            moveMethod();
+        else
+            moveOnSight();
+    }
+
+    public void moveMethod(){
+        calculateZoom();
+        calculateAngles();
+        float horizontal = calculateHorizontalDistance();
+        float vertical =  calculateVerticalDistance();
+        calculateCameraPosition(horizontal,vertical);
+        this.yaw = 180 - (currentPlayer.getBall().getModel().getRy()+angleAroundPlayer);
+    }
+
+    public void setCurrentPlayer(Player player){
+        this.currentPlayer = player;
+    }
 
     public void moveOnSight(){
 
@@ -93,7 +159,4 @@ public class Camera {
         return yaw;
     }
 
-    public float getRoll() {
-        return roll;
-    }
 }

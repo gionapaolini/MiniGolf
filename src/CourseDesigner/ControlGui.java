@@ -217,6 +217,7 @@ public class ControlGui {
                 if(Keyboard.isKeyDown(Keyboard.KEY_DELETE)){
                     isColliding = true;
                     executeClick();
+                    checkButtons();
                 }
             }
         }

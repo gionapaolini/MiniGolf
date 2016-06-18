@@ -11,4 +11,8 @@ public abstract class Player {
     public Player(Ball ball){
         this.ball = ball;
     }
+
+    public Ball getBall(){
+        return ball;
+    }
 }

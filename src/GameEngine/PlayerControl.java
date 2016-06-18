@@ -1,5 +1,7 @@
 package GameEngine;
 
+import GraphicsEngine.Entities.Camera;
+
 import java.util.List;
 
 /**
@@ -8,15 +10,27 @@ import java.util.List;
 public class PlayerControl {
     List<Player> players;
     Player currentPlayer;
+    Camera camera;
+    int nPlayer;
 
-    private void moveCamOnPlayer(){
+    public PlayerControl(List<Player> players, Camera camera) {
+        this.players = players;
+        this.camera = camera;
+        nPlayer = 0;
+        currentPlayer = players.get(0);
+    }
+
+    private void moveCamOnPlayer(Player player){
+        camera.setCurrentPlayer(player);
+    }
+    public void shot(){
 
     }
-    private void shot(){
-
-    }
-    private void nextPlayer(){
-
+    public void nextPlayer(){
+        nPlayer+=1;
+        nPlayer%=players.size();
+        currentPlayer = players.get(nPlayer);
+        moveCamOnPlayer(currentPlayer);
     }
 
 }
