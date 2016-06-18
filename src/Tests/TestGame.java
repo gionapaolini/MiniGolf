@@ -55,9 +55,8 @@ public class TestGame {
         players.add(player1);
         players.add(player2);
 
+        Camera camera = new Camera(player);
         
-
-
 
         PlayerControl playerControl = new PlayerControl(players,camera);
 
