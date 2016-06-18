@@ -4,6 +4,7 @@ import GameEngine.Human;
 import GameEngine.Player;
 import GameEngine.PlayerControl;
 import GolfObjects.Ball;
+import GolfObjects.Obstacle;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
@@ -15,8 +16,10 @@ import GraphicsEngine.RenderEngine.Loader;
 import GraphicsEngine.RenderEngine.MasterRenderer;
 import GraphicsEngine.RenderEngine.OBJLoader;
 import GraphicsEngine.Textures.ModelTexture;
+import PhysicsEngine.Physics;
 import Toolbox.MousePicker;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -42,7 +45,7 @@ public class TestGame {
 
         TexturedModel model = new TexturedModel(ballModel, white);
         Entity n = new Entity(model, new Vector3f(1, 0, 0), 0, 0, 0, 1);
-        Entity n1 = new Entity(model, new Vector3f(0, 0, 1), 0, 0, 0, 1);
+        Entity n1 = new Entity(model, new Vector3f(1, 0, 1), 0, 0, 0, 1);
         Entity n2 = new Entity(model, new Vector3f(1, 0, 1), 0, 0, 0, 1);
         Ball ball = new Ball(n);
         Ball ball1 = new Ball(n1);
@@ -58,29 +61,44 @@ public class TestGame {
         Camera camera = new Camera(player);
         TexturedModel arrowModel = new TexturedModel(OBJLoader.loadObjModel("arrow", loader),white);
         Entity arrow = new Entity(arrowModel, new Vector3f(1,0.001f,1), 0,0,0,1);
+        TexturedModel obstacleModel = new TexturedModel(OBJLoader.loadObjModel("cube", loader),white);
+        Entity obsta = new Entity(obstacleModel, new Vector3f(3,0,0), 0,0,0,1);
+        Obstacle obstacle = new Obstacle(obsta);
 
 
-        PlayerControl playerControl = new PlayerControl(players,camera);
+        PlayerControl playerControl = new PlayerControl(players,camera, arrow);
 
         MousePicker picker = new MousePicker(camera,renderer.getProjectionMatrix(), terrain);
 
 
 
         long time =0;
+        float timePhysics = 0.0084f;
+        long lastCall = 0;
         while (!Display.isCloseRequested()){
             camera.move();
             picker.update();
             playerControl.moveArrow(arrow,picker.getCurrentTerrainPoint());
-
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(ball.getModel());
             renderer.processEntity(ball1.getModel());
             renderer.processEntity(ball2.getModel());
             renderer.processEntity(arrow);
+            renderer.processEntity(obsta);
             if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
                 playerControl.nextPlayer();
             }
+            if(System.currentTimeMillis()-time>100 && Mouse.isButtonDown(0)){
+                playerControl.shot(picker.getCurrentTerrainPoint());
+            }
+            for(Player play: players){
+                Ball b = play.getBall();
+                Physics.applyGravity(b,timePhysics);
+
+            }
+            lastCall = Physics.collision(ball,obstacle,time,lastCall);
+
 
 
             DisplayManager.updateDisplay();

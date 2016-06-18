@@ -126,6 +126,7 @@ public class Physics {
 
     public static long collision(GolfObject obj1, GolfObject obj2, float time, long lastCall){
         if(checkBroadCollision(obj1,obj2) && System.currentTimeMillis()-lastCall>1/time*0.0084){
+            System.out.println("DD");
             Vector3f vel = obj1.getVelocity();
             Vector3f normalVel = new Vector3f(vel.x,vel.y,vel.z);
             normalVel.normalise();

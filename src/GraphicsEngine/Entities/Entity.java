@@ -13,9 +13,9 @@ import org.lwjgl.util.vector.Vector4f;
  */
 public class Entity {
     private TexturedModel model;
-    private Vector3f position;
+    public Vector3f position;
     private float rx,ry,rz;
-    private float scale;
+    private float scaleX, scaleY, scaleZ;
     public Vector4f[] squarePoints;
     private Vector3f[] worldProjectionPoints;
 
@@ -25,7 +25,21 @@ public class Entity {
         this.rx = rx;
         this.ry = ry;
         this.rz = rz;
-        this.scale = scale;
+        this.scaleX = scale;
+        this.scaleY = scale;
+        this.scaleZ = scale;
+        setBorderProjection();
+        setProjectionPoint();
+    }
+    public Entity(TexturedModel model, Vector3f position, float rx, float ry, float rz, float scaleX,float scaleY,float scaleZ) {
+        this.model = model;
+        this.position = position;
+        this.rx = rx;
+        this.ry = ry;
+        this.rz = rz;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
+        this.scaleZ = scaleZ;
         setBorderProjection();
         setProjectionPoint();
     }
@@ -56,7 +70,7 @@ public class Entity {
     }
     public void setProjectionPoint() {
         Matrix4f worldPosition = Maths.createTransformationMatrix(position,
-                rx, ry, rz, scale);
+                rx, ry, rz, scaleX,scaleY,scaleZ);
 
         worldPosition.transpose();
         Vector4f[] worldProjection = new Vector4f[4];
@@ -128,14 +142,29 @@ public class Entity {
         this.rz = rz%360;
         setProjectionPoint();
     }
-
-    public float getScale() {
-        return scale;
+    public float getScale(){
+        return scaleZ;
+    }
+    public float getScaleY() {
+        return scaleY;
+    }
+    public float getScaleZ() {
+        return scaleZ;
     }
 
     public void setScale(float scale) {
-        this.scale = scale;
+        this.scaleX = scale;
+        this.scaleY = scale;
+        this.scaleZ = scale;
         setProjectionPoint();
+    }
+    public void setScaleX(float scale) {
+        this.scaleX = scale;
+        setProjectionPoint();
+    }
+
+    public float getScaleX(){
+        return scaleX;
     }
 
     public ModelTexture getTexture(){
@@ -144,7 +173,7 @@ public class Entity {
 
     public Vector3f[] getWorldPoints(){
         Matrix4f worldPosition = Maths.createTransformationMatrix(position,
-                rx, ry, rz, scale);
+                rx, ry, rz, scaleX, scaleY, scaleZ);
         worldPosition.transpose();
         float[] vertexArray = model.getVertexArray();
 
