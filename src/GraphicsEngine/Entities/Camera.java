@@ -37,7 +37,7 @@ public class Camera {
 
     }
     private void calculateAngles(){
-        if(Mouse.isButtonDown(0)){
+        if(Mouse.isButtonDown(1)){
             float pitchChange = Mouse.getDY()*0.1f;
             pitch -= pitchChange;
             float angleChange = Mouse.getDX()*0.3f;
@@ -97,7 +97,7 @@ public class Camera {
             position.y -=increment * ly;
             position.z -=increment * lz;
         }
-        if(Mouse.isButtonDown(0)){
+        if(Mouse.isButtonDown(1)){
             yaw-=Mouse.getDX()/10;
             pitch+=Mouse.getDY()/10;
             lx =(float)Math.sin(Math.toRadians(yaw));
