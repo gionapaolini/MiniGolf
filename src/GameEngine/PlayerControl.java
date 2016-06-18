@@ -1,8 +1,12 @@
 package GameEngine;
 
 import GraphicsEngine.Entities.Camera;
+import GraphicsEngine.Entities.Entity;
+import org.lwjgl.util.vector.Vector3f;
 
 import java.util.List;
+
+import static java.lang.Math.PI;
 
 /**
  * Created by giogio on 17/06/16.
@@ -31,6 +35,25 @@ public class PlayerControl {
         nPlayer%=players.size();
         currentPlayer = players.get(nPlayer);
         moveCamOnPlayer(currentPlayer);
+    }
+
+    public void moveArrow(Entity arrow, Vector3f point){
+        if(point!=null) {
+
+            float angleInDegrees = GetAngleOfLineBetweenTwoPoints(arrow.getPosition(),point);
+            System.out.println(angleInDegrees);
+            arrow.setRy(-angleInDegrees);
+        }
+
+
+    }
+
+    public static float GetAngleOfLineBetweenTwoPoints(Vector3f p1, Vector3f p2)
+    {
+        double xDiff = p2.x - p1.x;
+        double yDiff = p2.z - p1.z;
+        return (float) Math.toDegrees(Math.atan2(yDiff, xDiff));
+
     }
 
 }

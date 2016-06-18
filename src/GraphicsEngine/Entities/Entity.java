@@ -107,7 +107,7 @@ public class Entity {
     }
 
     public void setRx(float rx) {
-        this.rx = rx;
+        this.rx = rx%360;
         setProjectionPoint();
     }
 
@@ -116,7 +116,7 @@ public class Entity {
     }
 
     public void setRy(float ry) {
-        this.ry = ry;
+        this.ry = ry%360;
         setProjectionPoint();
     }
 
@@ -125,7 +125,7 @@ public class Entity {
     }
 
     public void setRz(float rz) {
-        this.rz = rz;
+        this.rz = rz%360;
         setProjectionPoint();
     }
 

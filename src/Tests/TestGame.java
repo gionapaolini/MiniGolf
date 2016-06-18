@@ -56,7 +56,9 @@ public class TestGame {
         players.add(player2);
 
         Camera camera = new Camera(player);
-        
+        TexturedModel arrowModel = new TexturedModel(OBJLoader.loadObjModel("arrow", loader),white);
+        Entity arrow = new Entity(arrowModel, new Vector3f(1,0.001f,1), 0,0,0,1);
+
 
         PlayerControl playerControl = new PlayerControl(players,camera);
 
@@ -64,15 +66,18 @@ public class TestGame {
 
 
 
-
+        long time =0;
         while (!Display.isCloseRequested()){
             camera.move();
+            picker.update();
+            playerControl.moveArrow(arrow,picker.getCurrentTerrainPoint());
+
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(ball.getModel());
             renderer.processEntity(ball1.getModel());
             renderer.processEntity(ball2.getModel());
-
+            renderer.processEntity(arrow);
             if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
                 playerControl.nextPlayer();
             }
