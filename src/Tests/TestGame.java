@@ -6,7 +6,6 @@ import GameEngine.Player;
 import GameEngine.PlayerControl;
 import GolfObjects.Ball;
 import GolfObjects.Obstacle;
-import GolfObjects.PutHole;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
@@ -52,8 +51,6 @@ public class TestGame {
 
         RawModel ballModel = OBJLoader.loadObjModel("ball", loader);
         ModelTexture white = new ModelTexture(loader.loadTexture("white"));
-        ModelTexture black = new ModelTexture(loader.loadTexture("black"));
-
         TexturedModel model = new TexturedModel(ballModel, white);
         Entity n = new Entity(model, new Vector3f(1, 0, 0), 0, 0, 0, 1);
         Entity n1 = new Entity(model, new Vector3f(1, 0, 1), 0, 0, 0, 1);
@@ -86,8 +83,7 @@ public class TestGame {
         MousePicker picker = new MousePicker(camera,renderer.getProjectionMatrix(), terrain);
 
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,picker);
-        Entity putHoleModel = new Entity(new TexturedModel(OBJLoader.loadObjModel("underHole", loader),black),new Vector3f(2,0,2),0,0,0,1);
-        PutHole putHole = new PutHole(putHoleModel);
+
 
 
         float timePhysics = 0.0084f;
@@ -95,7 +91,7 @@ public class TestGame {
             camera.move();
             picker.update();
             guiControlGame.checkButtonsClick();
-            playerControl.game(picker,obstacles,terrain,putHole,timePhysics);
+            playerControl.game(picker,obstacles,terrain,timePhysics);
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(ball.getModel());
