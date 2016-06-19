@@ -1,6 +1,7 @@
 package GameEngine;
 import GolfObjects.Ball;
 import GolfObjects.Obstacle;
+import GolfObjects.PutHole;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Terrain;
@@ -68,13 +69,13 @@ public class PlayerControl {
 
     }
 
-    public void game(MousePicker picker, List<Obstacle> obstacles,Terrain terrain,float time){
+    public void game(MousePicker picker, List<Obstacle> obstacles,Terrain terrain,PutHole putHole,float time){
         if(!pause && System.currentTimeMillis()-time >1000) {
             moveArrow(arrow, picker.getCurrentTerrainPoint());
             decrementTimeLeft();
             shot(picker.getCurrentTerrainPoint());
             nextPlayer();
-            applyPhysics(obstacles,terrain,time);
+            applyPhysics(obstacles,terrain,putHole,time);
         }
     }
     public void nextPlayer(){
@@ -99,16 +100,23 @@ public class PlayerControl {
         }
     }
 
-    public void applyPhysics(List<Obstacle> obstacles,Terrain terrain,float time){
+    public void applyPhysics(List<Obstacle> obstacles, Terrain terrain, PutHole putHole
+                             ,float time){
         for(Player player: players){
             Ball ball = player.getBall();
             if(ball.isMoving()){
-                Physics.applyGravity(ball,time);
-                Physics.applyFriction(ball,time);
-                Physics.terrainCollision(ball,terrain,time);
-                for(Obstacle obstacle:obstacles){
-                    Physics.collision(ball,obstacle,time);
+                if(!Physics.checkBroadCollision(ball, putHole)){
+                    Physics.applyGravity(ball,time,false);
+                    Physics.applyFriction(ball,time);
+                    Physics.terrainCollision(ball,terrain,time);
+                    for(Obstacle obstacle:obstacles){
+                        Physics.collision(ball,obstacle,time);
+                    }
+                }else {
+                    Physics.applyGravity(ball,time,true);
+                    Physics.collision(ball,putHole,time);
                 }
+
                 Physics.setNewPosition(ball,time);
             }
         }
