@@ -68,12 +68,14 @@ public class PlayerControl {
 
     }
 
-    public void game(MousePicker picker){
+    public void game(MousePicker picker,List<Obstacle> obstacles,Terrain terrain,float time){
         if(!pause && System.currentTimeMillis()-time >1000) {
             moveArrow(arrow, picker.getCurrentTerrainPoint());
             decrementTimeLeft();
             shot(picker.getCurrentTerrainPoint());
             nextPlayer();
+            applyPhysics(obstacles,terrain,time);
+
         }
     }
     public void nextPlayer(){

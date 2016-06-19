@@ -27,7 +27,7 @@ public class Physics {
     public static void setNewPosition(GolfObject obj, float time){
         Vector3f position = obj.getPosition();
         Vector3f vel = obj.getVelocity();
-        obj.setPosition(new Vector3f((position.x+(vel.x*time)),Math.max(position.y+(vel.y*time),0),(position.z+(vel.z*time))));
+        obj.setPosition(new Vector3f((position.x+(vel.x*time)),position.y+(vel.y*time),(position.z+(vel.z*time))));
     }
 
     public static void setNewPosition(GolfObject obj, float time, Terrain terrain){
@@ -43,7 +43,6 @@ public class Physics {
 
         if(!(newPos.x-0.35578898<=l1 || newPos.x+0.35578898>=l3 || newPos.z-0.35578898<=l2 || newPos.z+0.35578898>=l4)){
             obj.setPosition(newPos);
-            System.out.println(newPos);
         }
 
 
@@ -191,7 +190,7 @@ public class Physics {
 
     }
 
-    public static void collision(GolfObject obj1, GolfObject obj2, float time){
+    public static boolean collision(GolfObject obj1, GolfObject obj2, float time){
         obj1.setColliding(false);
         boolean collision = checkBroadCollision(obj1,obj2);
         if(collision){
@@ -217,10 +216,11 @@ public class Physics {
             if(normal!=null) {
                 obj1.setColliding(true);
                 applyCollision(obj1, normal, time);
+                return true;
             }
         }
 
-
+        return false;
     }
 
 
