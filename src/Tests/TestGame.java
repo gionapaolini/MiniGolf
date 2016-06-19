@@ -50,18 +50,10 @@ public class TestGame {
         MasterRenderer renderer = new MasterRenderer();
 
         RawModel ballModel = OBJLoader.loadObjModel("ball", loader);
-        RawModel holeModel = OBJLoader.loadObjModel("underHole", loader);
-
         ModelTexture white = new ModelTexture(loader.loadTexture("white"));
-        ModelTexture black = new ModelTexture(loader.loadTexture("black"));
-
         TexturedModel model = new TexturedModel(ballModel, white);
-        TexturedModel hole = new TexturedModel(holeModel, black);
-
         Entity n = new Entity(model, new Vector3f(1, 0, 0), 0, 0, 0, 1);
         Entity n1 = new Entity(model, new Vector3f(1, 0, 1), 0, 0, 0, 1);
-        Entity n2 = new Entity(hole, new Vector3f(2, 1, 2), 0, 0, 0, 1);
-
 
         Ball ball = new Ball(n);
         Ball ball1 = new Ball(n1);
@@ -81,11 +73,9 @@ public class TestGame {
         TexturedModel obstacleModel = new TexturedModel(OBJLoader.loadObjModel("slope", loader),white);
         Entity obsta = new Entity(obstacleModel, new Vector3f(-4,0,0),0,0,0,1);
         Obstacle obstacle = new Obstacle(obsta);
-        Obstacle holeObs = new Obstacle(n2);
 
         List<Obstacle> obstacles = new ArrayList<Obstacle>();
         obstacles.add(obstacle);
-        obstacles.add(holeObs);
 
 
         PlayerControl playerControl = new PlayerControl(players,camera, arrow,30);
@@ -101,7 +91,8 @@ public class TestGame {
             camera.move();
             picker.update();
             guiControlGame.checkButtonsClick();
-            playerControl.game(picker,obstacles,terrain,timePhysics);
+            playerControl.game(picker);
+            playerControl.applyPhysics(obstacles,terrain,timePhysics);
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(ball.getModel());
@@ -110,7 +101,6 @@ public class TestGame {
                 renderer.processEntity(arrow);
 
             renderer.processEntity(obsta);
-            renderer.processEntity(n2);
             guiGame.render();
             DisplayManager.updateDisplay();
         }
