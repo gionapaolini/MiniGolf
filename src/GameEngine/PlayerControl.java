@@ -104,16 +104,23 @@ public class PlayerControl {
         for(Player player: players){
             Ball ball = player.getBall();
             if(ball.isMoving()){
-                if(Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole())){
-                    System.out.println("Colliding");
+                if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
+                    Physics.applyGravity(ball,time,false);
+                    Physics.applyFriction(ball,time);
+                    Physics.terrainCollision(ball,terrain,time);
+                    for(Obstacle obstacle:obstacles){
+                        Physics.collision(ball,obstacle,time);
+                    }
+                    Physics.setNewPosition(ball,time,false);
+                }else {
+                    Physics.applyGravity(ball,time,true);
+                    Physics.collision(ball,putHole,time);
+                    Physics.setNewPosition(ball,time,true);
+                    if(ball.getPosition().y<-1){
+                        pause=true;
+                    }
                 }
-                Physics.applyGravity(ball,time);
-                Physics.applyFriction(ball,time);
-                Physics.terrainCollision(ball,terrain,time);
-                for(Obstacle obstacle:obstacles){
-                    Physics.collision(ball,obstacle,time);
-                }
-                Physics.setNewPosition(ball,time);
+
             }
         }
     }

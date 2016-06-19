@@ -87,7 +87,7 @@ public class TestGame {
 
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,picker);
 
-        Entity putHoleEnt = new Entity(new TexturedModel(OBJLoader.loadObjModel("underHole",loader),black),new Vector3f(2,0.1f,2),0,0,0,1);
+        Entity putHoleEnt = new Entity(new TexturedModel(OBJLoader.loadObjModel("underHole",loader),black),new Vector3f(2,-0.01f,2),0,0,0,1);
         Entity fakeHole = new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole",loader),black),new Vector3f(2,0.001f,2),0,0,0,1);
         PutHole putHole = new PutHole(putHoleEnt,fakeHole);
 
