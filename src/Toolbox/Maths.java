@@ -10,18 +10,19 @@ import org.lwjgl.util.vector.Vector4f;
  * Created by giogio on 05/06/16.
  */
 public class Maths {
-    public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, float scale){
+    public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, float scaleX,float scaleY, float scaleZ){
         Matrix4f matrix = new Matrix4f();
         matrix.setIdentity();
         Matrix4f.translate(translation,matrix,matrix);
         Matrix4f.rotate((float)(Math.toRadians(rx)), new Vector3f(1,0,0), matrix,matrix);
         Matrix4f.rotate((float)(Math.toRadians(ry)), new Vector3f(0,1,0), matrix,matrix);
         Matrix4f.rotate((float)(Math.toRadians(rz)), new Vector3f(0,0,1), matrix,matrix);
-        Matrix4f.scale(new Vector3f(scale,scale,scale),matrix,matrix);
+        Matrix4f.scale(new Vector3f(scaleX,scaleY,scaleZ),matrix,matrix);
 
         return matrix;
 
     }
+
 
     public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
         Matrix4f matrix = new Matrix4f();
@@ -81,6 +82,14 @@ public class Maths {
 
     public static float distancePoints(Vector3f p1,Vector3f p2){
         return (float) Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
+    }
+
+    public static float GetAngleOfLineBetweenTwoPoints(Vector3f p1, Vector3f p2)
+    {
+        double xDiff = p2.x - p1.x;
+        double yDiff = p2.z - p1.z;
+        return (float) Math.toDegrees(Math.atan2(yDiff, xDiff));
+
     }
 
 

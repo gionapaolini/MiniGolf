@@ -9,19 +9,15 @@ import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
 import GraphicsEngine.Entities.Terrain;
 import GraphicsEngine.Guis.GuiCourseCreator;
-import GraphicsEngine.Guis.GuiRenderer;
-import GraphicsEngine.Guis.GuiTexture;
+
 import GraphicsEngine.RenderEngine.*;
-import GraphicsEngine.Model.RawModel;
 import GraphicsEngine.Model.TexturedModel;
 import GraphicsEngine.Textures.ModelTexture;
-import PhysicsEngine.Physics;
-import Toolbox.Maths;
+
 import Toolbox.MousePicker;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+
 import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
+
 import org.lwjgl.util.vector.Vector3f;
 
 import java.util.ArrayList;
@@ -30,7 +26,7 @@ import java.util.List;
 /**
  * Created by giogio on 04/06/16.
  */
-public class Test {
+public class TestCourseDesigner {
 
     public static void main(String[] args){
 
@@ -49,8 +45,9 @@ public class Test {
 
         ModelTexture black = new ModelTexture(loader.loadTexture("black"));
 
-
-        PutHole putHole = new PutHole(new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole", loader),black),new Vector3f(-1,0,0),0,0,0,1));
+        Entity putHoleEnt = new Entity(new TexturedModel(OBJLoader.loadObjModel("underHole",loader),black),new Vector3f(-1,0,0),0,0,0,1);
+        Entity fakeHole = new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole",loader),black),new Vector3f(-1,0,0),0,0,0,1);
+        PutHole putHole = new PutHole(putHoleEnt,fakeHole);
 
 
         List<Ball> balls = new ArrayList<Ball>();
@@ -72,7 +69,7 @@ public class Test {
             for(Obstacle obstacle: obstacles){
                 renderer.processEntity(obstacle.getModel());
             }
-            renderer.processEntity(putHole.getModel());
+            renderer.processEntity(putHole.getFakeHole());
 
 
             DisplayManager.updateDisplay();

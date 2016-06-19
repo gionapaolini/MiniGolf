@@ -15,7 +15,7 @@ public abstract class GolfObject {
     protected Entity model;
     protected float mass;
     protected float cor;
-
+    protected boolean isColliding;
     public GolfObject(Entity model) {
         this.model = model;
         velocity = new Vector3f(0,0,0);
@@ -76,6 +76,26 @@ public abstract class GolfObject {
 
     public Vector4f[] getProjectionPoints(){
         return model.getProjectionPoints();
+    }
+
+    public boolean isMoving(){
+        if(velocity.x!=0 || velocity.z!=0){
+            return true;
+        }
+        return false;
+    }
+
+    public void setColliding(boolean value){
+        isColliding = value;
+    }
+    public boolean isColliding(){
+        return isColliding;
+    }
+    public boolean isFlying(){
+        if(!isColliding && getPosition().y>0){
+            return true;
+        }
+        return false;
     }
 
 

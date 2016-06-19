@@ -99,20 +99,20 @@ public class ControlGui {
                 currentObj.setPosition(point);
                 isColliding = false;
                 for (Ball ball: balls) {
-                    if (currentObj != ball && Physics.checkBroadCollision(currentObj, ball)) {
+                    if (currentObj != ball && Physics.checkBroadCollision(currentObj.getModel(), ball.getModel())) {
                         isColliding = true;
                         break;
                     }
                 }
                 if (!isColliding)
                     for (Obstacle obstacle : obstacles) {
-                        if (currentObj != obstacle && Physics.checkBroadCollision(currentObj, obstacle)) {
+                        if (currentObj != obstacle && Physics.checkBroadCollision(currentObj.getModel(), obstacle.getModel())) {
                             isColliding = true;
                             break;
                         }
                     }
                 if (!isColliding)
-                    if (currentObj != putHole && Physics.checkBroadCollision(currentObj, putHole)) {
+                    if (currentObj != putHole && Physics.checkBroadCollision(currentObj.getModel(), putHole.getModel())) {
                         isColliding = true;
                     }
                 if (isColliding) {
@@ -180,7 +180,7 @@ public class ControlGui {
         float area4 = areaTriangle(point,points[1],points[0]);
         float sum = area1+area2+area3+area4;
         Vector4f[] pointsProj = obj.getProjectionPoints();
-        Matrix4f worldPosition = Maths.createTransformationMatrix(new Vector3f(0,0,0),0,0,0,obj.getModel().getScale());
+        Matrix4f worldPosition = Maths.createTransformationMatrix(new Vector3f(0,0,0),0,0,0,obj.getModel().getScaleX(),obj.getModel().getScaleY(),obj.getModel().getScaleZ());
 
         float l1 = Maths.Vector4Matrix4Product(worldPosition,pointsProj[1]).x - Maths.Vector4Matrix4Product(worldPosition,pointsProj[0]).x;
         float l2 = Maths.Vector4Matrix4Product(worldPosition,pointsProj[2]).z - Maths.Vector4Matrix4Product(worldPosition,pointsProj[0]).z;
@@ -217,6 +217,7 @@ public class ControlGui {
                 if(Keyboard.isKeyDown(Keyboard.KEY_DELETE)){
                     isColliding = true;
                     executeClick();
+                    checkButtons();
                 }
             }
         }
