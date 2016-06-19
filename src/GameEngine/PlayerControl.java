@@ -6,6 +6,7 @@ import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Terrain;
 import PhysicsEngine.Physics;
 import Toolbox.Maths;
+import Toolbox.MousePicker;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 import java.util.List;
@@ -19,10 +20,13 @@ public class PlayerControl {
     Player currentPlayer;
     Camera camera;
     Entity arrow;
-    int nPlayer;
-    public boolean disabledShot;
+    public int nPlayer, timeLeft, maxTimeTurn;
+    public boolean disabledShot, pause, wait;
+    long time = 0;
+    long timeLeftShot = 0;
 
-    public PlayerControl(List<Player> players, Camera camera, Entity arrow) {
+
+    public PlayerControl(List<Player> players, Camera camera, Entity arrow, int maxTimeTurn) {
         this.players = players;
         this.camera = camera;
         nPlayer = 0;
@@ -31,6 +35,8 @@ public class PlayerControl {
         arrow.setPosition(currentPlayer.getBall().getPosition());
         arrow.position.y=0.001f;
         disabledShot = false;
+        this.maxTimeTurn = maxTimeTurn;
+
     }
 
     private void selectPlayer(){
@@ -41,8 +47,15 @@ public class PlayerControl {
 
     }
 
+    private void decrementTimeLeft(){
+        if(System.currentTimeMillis() - timeLeftShot >1000){
+            timeLeft--;
+            timeLeftShot = System.currentTimeMillis();
+        }
+    }
+
     public void shot(Vector3f point){
-        if(point!= null && !disabledShot && Mouse.isButtonDown(0)) {
+        if(point!= null && !disabledShot && Mouse.isButtonDown(0) && !wait) {
             Vector3f diff = Maths.vector3SUB(point, currentPlayer.getBall().getPosition());
             float distance = Maths.distancePoints(arrow.getPosition(), point);
             distance = Math.min(distance, 4);
@@ -54,19 +67,29 @@ public class PlayerControl {
         }
 
     }
+
+    public void game(MousePicker picker){
+        if(!pause && System.currentTimeMillis()-time >1000) {
+            moveArrow(arrow, picker.getCurrentTerrainPoint());
+            decrementTimeLeft();
+            shot(picker.getCurrentTerrainPoint());
+            nextPlayer();
+        }
+    }
     public void nextPlayer(){
-        if(!currentPlayer.getBall().isMoving() && disabledShot) {
+        if((!currentPlayer.getBall().isMoving() && disabledShot)||(timeLeft<0)) {
             nPlayer += 1;
             nPlayer %= players.size();
             currentPlayer = players.get(nPlayer);
             selectPlayer();
             disabledShot = false;
+            timeLeft = maxTimeTurn;
         }
     }
 
     public void moveArrow(Entity arrow, Vector3f point){
         if(point!=null) {
-            float angleInDegrees = GetAngleOfLineBetweenTwoPoints(arrow.getPosition(),point);
+            float angleInDegrees = Maths.GetAngleOfLineBetweenTwoPoints(arrow.getPosition(),point);
             arrow.setRy(-angleInDegrees);
             float distance = Maths.distancePoints(arrow.getPosition(),point);
             if(distance<4)
@@ -77,25 +100,16 @@ public class PlayerControl {
 
     }
 
-    public void applyPhysics(List<Obstacle> obstacles, float time, long lastCall, Terrain terrain){
-        Ball ball = currentPlayer.getBall();
-        Physics.applyGravity(ball,time);
-        if(ball.isMoving()) {
-            Physics.applyFriction(ball,time);
+    public void setPause(boolean value){
+        if(value){
+            pause=value;
+        }else {
+            pause = false;
+            time = System.currentTimeMillis();
         }
-        for(Obstacle obstacle: obstacles){
-            lastCall = Physics.collision(ball,obstacle,time,lastCall);
-        }
-
     }
 
-    public float GetAngleOfLineBetweenTwoPoints(Vector3f p1, Vector3f p2)
-    {
-        double xDiff = p2.x - p1.x;
-        double yDiff = p2.z - p1.z;
-        return (float) Math.toDegrees(Math.atan2(yDiff, xDiff));
 
-    }
 
     public Player getCurrentPlayer(){
         return currentPlayer;

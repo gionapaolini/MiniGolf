@@ -1,5 +1,6 @@
 package Tests;
 
+import GameEngine.GuiControlGame;
 import GameEngine.Human;
 import GameEngine.Player;
 import GameEngine.PlayerControl;
@@ -9,6 +10,7 @@ import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
 import GraphicsEngine.Entities.Terrain;
+import GraphicsEngine.Guis.GuiGame;
 import GraphicsEngine.Model.RawModel;
 import GraphicsEngine.Model.TexturedModel;
 import GraphicsEngine.RenderEngine.DisplayManager;
@@ -16,13 +18,18 @@ import GraphicsEngine.RenderEngine.Loader;
 import GraphicsEngine.RenderEngine.MasterRenderer;
 import GraphicsEngine.RenderEngine.OBJLoader;
 import GraphicsEngine.Textures.ModelTexture;
+import GraphicsEngine.fontMeshCreator.FontType;
+import GraphicsEngine.fontMeshCreator.GUIText;
+import GraphicsEngine.fontRendering.TextMaster;
 import PhysicsEngine.Physics;
 import Toolbox.MousePicker;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +42,8 @@ public class TestGame {
         DisplayManager.createDisplay("CrazyGolf Game");
 
         Loader loader = new Loader();
+        TextMaster.init(loader);
+        GuiGame guiGame = new GuiGame(loader);
         Light light = new Light(new Vector3f(0,20,0),new Vector3f(1,1,1));
         Terrain terrain = new Terrain(-10,-10,20,20,loader,new ModelTexture(loader.loadTexture("grassy2")));
 
@@ -66,20 +75,24 @@ public class TestGame {
         Obstacle obstacle = new Obstacle(obsta);
 
 
-        PlayerControl playerControl = new PlayerControl(players,camera, arrow);
+
+        PlayerControl playerControl = new PlayerControl(players,camera, arrow,30);
 
         MousePicker picker = new MousePicker(camera,renderer.getProjectionMatrix(), terrain);
 
+        GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,picker);
 
 
 
         float timePhysics = 0.0084f;
         long lastCall = 0;
+        long lastCallaa = 0;
+        int number = 0;
         while (!Display.isCloseRequested()){
             camera.move();
             picker.update();
-            playerControl.moveArrow(arrow,picker.getCurrentTerrainPoint());
-            playerControl.shot(picker.getCurrentTerrainPoint());
+            guiControlGame.checkButtonsClick();
+            playerControl.game(picker);
             Ball currentBall = playerControl.getCurrentPlayer().getBall();
             lastCall = 0;
             Physics.collision(currentBall,obstacle,timePhysics,lastCall);
@@ -87,17 +100,19 @@ public class TestGame {
             Physics.applyFriction(currentBall,timePhysics);
             Physics.terrainCollision(currentBall,terrain,timePhysics);
             Physics.setNewPosition(currentBall,timePhysics);
-            playerControl.nextPlayer();
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(ball.getModel());
             renderer.processEntity(ball1.getModel());
             if(!playerControl.disabledShot)
                 renderer.processEntity(arrow);
-            renderer.processEntity(obsta);
 
+            renderer.processEntity(obsta);
+            guiGame.render();
             DisplayManager.updateDisplay();
         }
+        TextMaster.cleanUp();
+        guiGame.cleanUp();
         loader.cleanUp();
         renderer.cleanUp();
         DisplayManager.closeDisplay();

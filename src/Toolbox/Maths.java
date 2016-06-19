@@ -84,5 +84,13 @@ public class Maths {
         return (float) Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
     }
 
+    public static float GetAngleOfLineBetweenTwoPoints(Vector3f p1, Vector3f p2)
+    {
+        double xDiff = p2.x - p1.x;
+        double yDiff = p2.z - p1.z;
+        return (float) Math.toDegrees(Math.atan2(yDiff, xDiff));
+
+    }
+
 
 }
