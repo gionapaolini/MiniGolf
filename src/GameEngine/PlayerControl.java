@@ -104,6 +104,9 @@ public class PlayerControl {
         for(Player player: players){
             Ball ball = player.getBall();
             if(ball.isMoving()){
+                if(Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole())){
+                    System.out.println("Colliding");
+                }
                 Physics.applyGravity(ball,time);
                 Physics.applyFriction(ball,time);
                 Physics.terrainCollision(ball,terrain,time);

@@ -2,6 +2,7 @@ package PhysicsEngine;
 
 import GolfObjects.Ball;
 import GolfObjects.GolfObject;
+import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Terrain;
 import Toolbox.Maths;
 import org.lwjgl.util.vector.Vector2f;
@@ -87,13 +88,15 @@ public class Physics {
         obj2.setVelocity(Maths.vector3SUM(vel2,Maths.scalarProduct(I,1/obj.getMass())));
     }
 
-    public static boolean checkBroadCollision(GolfObject en1, GolfObject en2){
-        Vector3f[] obsBound1 = en1.getWorldProjectionPoint();
-        Vector3f[] obsBound2 = en2.getWorldProjectionPoint();
-        float max1 = en1.getModel().getHighestPoint();
-        float max2 = en2.getModel().getHighestPoint();
-        float min1 = en1.getModel().getLowestPoint();
-        float min2 = en2.getModel().getLowestPoint();
+    public static boolean checkBroadCollision(Entity en1, Entity en2){
+        Vector3f[] obsBound1 = en1.getWorldProjectionPoints();
+        Vector3f[] obsBound2 = en2.getWorldProjectionPoints();
+
+
+        float max1 = en1.getHighestPoint();
+        float max2 = en2.getHighestPoint();
+        float min1 = en1.getLowestPoint();
+        float min2 = en2.getLowestPoint();
 
         if(!(max2<max1 && max2>min1 || max1<max2 && max1>min2)){
 
@@ -193,7 +196,7 @@ public class Physics {
 
     public static void collision(GolfObject obj1, GolfObject obj2, float time){
         obj1.setColliding(false);
-        boolean collision = checkBroadCollision(obj1,obj2);
+        boolean collision = checkBroadCollision(obj1.getModel(),obj2.getModel());
         if(collision){
             Vector3f vel = obj1.getVelocity();
             Vector3f normalVel = new Vector3f(vel.x,vel.y,vel.z);

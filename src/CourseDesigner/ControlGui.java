@@ -99,20 +99,20 @@ public class ControlGui {
                 currentObj.setPosition(point);
                 isColliding = false;
                 for (Ball ball: balls) {
-                    if (currentObj != ball && Physics.checkBroadCollision(currentObj, ball)) {
+                    if (currentObj != ball && Physics.checkBroadCollision(currentObj.getModel(), ball.getModel())) {
                         isColliding = true;
                         break;
                     }
                 }
                 if (!isColliding)
                     for (Obstacle obstacle : obstacles) {
-                        if (currentObj != obstacle && Physics.checkBroadCollision(currentObj, obstacle)) {
+                        if (currentObj != obstacle && Physics.checkBroadCollision(currentObj.getModel(), obstacle.getModel())) {
                             isColliding = true;
                             break;
                         }
                     }
                 if (!isColliding)
-                    if (currentObj != putHole && Physics.checkBroadCollision(currentObj, putHole)) {
+                    if (currentObj != putHole && Physics.checkBroadCollision(currentObj.getModel(), putHole.getModel())) {
                         isColliding = true;
                     }
                 if (isColliding) {
