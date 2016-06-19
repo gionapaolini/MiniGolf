@@ -14,9 +14,9 @@ import java.util.Random;
  */
 public class Physics {
 
-    public static void applyGravity(GolfObject obj, float time, boolean onPutHole){
+    public static void applyGravity(GolfObject obj, float time){
         Vector3f pos = obj.getPosition();
-        if(pos.y > 0 || onPutHole) {
+        if(pos.y > 0) {
             Vector3f vel = obj.getVelocity();
             obj.setVelocity(new Vector3f(vel.x, (float) (vel.y - (9.8 * time)), vel.z));
             setNewPosition(obj,time);
@@ -27,7 +27,7 @@ public class Physics {
     public static void setNewPosition(GolfObject obj, float time){
         Vector3f position = obj.getPosition();
         Vector3f vel = obj.getVelocity();
-        obj.setPosition(new Vector3f((position.x+(vel.x*time)),position.y+(vel.y*time),(position.z+(vel.z*time))));
+        obj.setPosition(new Vector3f((position.x+(vel.x*time)),Math.max(position.y+(vel.y*time),0),(position.z+(vel.z*time))));
     }
 
     public static void setNewPosition(GolfObject obj, float time, Terrain terrain){
