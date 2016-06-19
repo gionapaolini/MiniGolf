@@ -45,8 +45,9 @@ public class TestCourseDesigner {
 
         ModelTexture black = new ModelTexture(loader.loadTexture("black"));
 
-
-        PutHole putHole = new PutHole(new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole", loader),black),new Vector3f(-1,0,0),0,0,0,1));
+        Entity putHoleEnt = new Entity(new TexturedModel(OBJLoader.loadObjModel("underHole",loader),black),new Vector3f(-1,0,0),0,0,0,1);
+        Entity fakeHole = new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole",loader),black),new Vector3f(-1,0,0),0,0,0,1);
+        PutHole putHole = new PutHole(putHoleEnt,fakeHole);
 
 
         List<Ball> balls = new ArrayList<Ball>();
@@ -68,7 +69,7 @@ public class TestCourseDesigner {
             for(Obstacle obstacle: obstacles){
                 renderer.processEntity(obstacle.getModel());
             }
-            renderer.processEntity(putHole.getModel());
+            renderer.processEntity(putHole.getFakeHole());
 
 
             DisplayManager.updateDisplay();
