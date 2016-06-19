@@ -27,7 +27,7 @@ public class Physics {
     public static void setNewPosition(GolfObject obj, float time){
         Vector3f position = obj.getPosition();
         Vector3f vel = obj.getVelocity();
-        obj.setPosition(new Vector3f((position.x+(vel.x*time)),Math.max(position.y+(vel.y*time),0),(position.z+(vel.z*time))));
+        obj.setPosition(new Vector3f((position.x+(vel.x*time)),position.y+(vel.y*time),(position.z+(vel.z*time))));
     }
 
     public static void setNewPosition(GolfObject obj, float time, Terrain terrain){
@@ -61,12 +61,12 @@ public class Physics {
     public static void applyFriction(GolfObject obj, float time){
 
         if(!obj.isFlying()) {
-            float u = 1.5f * time;
+            float u = 0.5f * time;
             Vector3f vel = obj.getVelocity();
             Vector3f newVel = new Vector3f(vel.x - (vel.x * u), vel.y - (vel.y * u), vel.z - (vel.z * u));
             if (Math.abs(newVel.x) < 0.2 && Math.abs(newVel.z) < 0.2 && obj.getPosition().y <= 0 && Math.abs(newVel.y) < 0.2) {
                 newVel.x = 0;
-                newVel.y = 0;
+              //  newVel.y = 0;
                 newVel.z = 0;
             }
 
