@@ -74,6 +74,8 @@ public class TestGame {
         Entity obsta = new Entity(obstacleModel, new Vector3f(-4,0,0),0,0,0,1);
         Obstacle obstacle = new Obstacle(obsta);
 
+        List<Obstacle> obstacles = new ArrayList<Obstacle>();
+        obstacles.add(obstacle);
 
 
         PlayerControl playerControl = new PlayerControl(players,camera, arrow,30);
@@ -85,21 +87,12 @@ public class TestGame {
 
 
         float timePhysics = 0.0084f;
-        long lastCall = 0;
-        long lastCallaa = 0;
-        int number = 0;
         while (!Display.isCloseRequested()){
             camera.move();
             picker.update();
             guiControlGame.checkButtonsClick();
             playerControl.game(picker);
-            Ball currentBall = playerControl.getCurrentPlayer().getBall();
-            lastCall = 0;
-            Physics.collision(currentBall,obstacle,timePhysics,lastCall);
-            Physics.applyGravity(currentBall,timePhysics);
-            Physics.applyFriction(currentBall,timePhysics);
-            Physics.terrainCollision(currentBall,terrain,timePhysics);
-            Physics.setNewPosition(currentBall,timePhysics);
+            playerControl.applyPhysics(obstacles,terrain,timePhysics);
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(ball.getModel());

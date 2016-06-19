@@ -184,7 +184,6 @@ public class Physics {
 
             if (obj.getPosition().y <= 0) {
                 applyCollision(obj, new Vector3f(0, 1, 0), time);
-                setNewPosition(obj, time, terrain);
             }
         }
 
@@ -192,10 +191,10 @@ public class Physics {
 
     }
 
-    public static long collision(GolfObject obj1, GolfObject obj2, float time, long lastCall){
+    public static void collision(GolfObject obj1, GolfObject obj2, float time){
         obj1.setColliding(false);
         boolean collision = checkBroadCollision(obj1,obj2);
-        if(collision && System.currentTimeMillis()-lastCall>0.5f/time*0.0084){
+        if(collision){
             Vector3f vel = obj1.getVelocity();
             Vector3f normalVel = new Vector3f(vel.x,vel.y,vel.z);
             normalVel.normalise();
@@ -218,14 +217,9 @@ public class Physics {
             if(normal!=null) {
                 obj1.setColliding(true);
                 applyCollision(obj1, normal, time);
-                setNewPosition(obj1,time);
             }
-            lastCall = System.currentTimeMillis();
-
-
         }
 
-        return lastCall;
 
     }
 

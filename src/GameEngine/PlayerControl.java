@@ -96,8 +96,21 @@ public class PlayerControl {
                 arrow.setScaleX(distance/1.3f);
 
         }
+    }
 
-
+    public void applyPhysics(List<Obstacle> obstacles,Terrain terrain,float time){
+        for(Player player: players){
+            Ball ball = player.getBall();
+            if(ball.isMoving()){
+                Physics.applyGravity(ball,time);
+                Physics.applyFriction(ball,time);
+                Physics.terrainCollision(ball,terrain,time);
+                for(Obstacle obstacle:obstacles){
+                    Physics.collision(ball,obstacle,time);
+                }
+                Physics.setNewPosition(ball,time);
+            }
+        }
     }
 
     public void setPause(boolean value){

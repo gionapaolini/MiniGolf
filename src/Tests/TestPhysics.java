@@ -85,8 +85,7 @@ public class TestPhysics{
                 Physics.applyCollision(ball, normal, time);
 
             }
-
-            lastCall = Physics.collision(ball,obstacle,time,lastCall);
+            Physics.collision(ball,obstacle,time);
             Physics.setNewPosition(ball,time,terrain);
 
             if(Keyboard.isKeyDown(Keyboard.KEY_ADD)){
