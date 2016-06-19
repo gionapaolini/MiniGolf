@@ -32,6 +32,8 @@ public class MousePicker {
         this.viewMatrix = Maths.createViewMatrix(camera);
         this.terrain = terrain;
     }
+    public MousePicker(){
+    }
 
     public Vector3f getCurrentRay(){
         return currentRay;

@@ -23,7 +23,7 @@ public class PlayerControl {
     Entity arrow;
     public int nPlayer, timeLeft, maxTimeTurn;
     public boolean disabledShot, pause, wait;
-    long time = 0;
+    long time;
     long timeLeftShot = 0;
 
 
@@ -64,13 +64,12 @@ public class PlayerControl {
             diff = Maths.scalarProduct(diff, 5 * distance);
             currentPlayer.getBall().setVelocity(diff);
             disabledShot = true;
-            System.out.println("FFW");
         }
 
     }
 
     public void game(MousePicker picker, List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time){
-        if(!pause && System.currentTimeMillis()-time >1000) {
+        if(!pause && System.currentTimeMillis()-this.time>1000) {
             moveArrow(arrow, picker.getCurrentTerrainPoint());
             decrementTimeLeft();
             shot(picker.getCurrentTerrainPoint());
@@ -131,6 +130,8 @@ public class PlayerControl {
         }else {
             pause = false;
             time = System.currentTimeMillis();
+            System.out.println(time);
+
         }
     }
 

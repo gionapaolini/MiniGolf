@@ -26,6 +26,7 @@ public class GuiGame {
         font = new FontType(loader.loadTexture("arial"), new File("res/arial.fnt"));
         text = new GUIText("Player 1 is your turn, do your shot!", 1, font, new Vector2f(0,0),1f,true);
         text.setColour(127,255,0);
+        text.load();
         guis = new ArrayList<GuiTexture>();
         pause = new GuiButton("pauseButton_on","pauseButton_off",loader,0.90f,0.90f,0.08f);
         resume = new GuiButton("playButton_on","playButton_off",loader,0,0.15f,0.27f);

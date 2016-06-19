@@ -60,7 +60,6 @@ public class GUIText {
 		this.position = position;
 		this.lineMaxSize = maxLineLength;
 		this.centerText = centered;
-		TextMaster.loadText(this);
 	}
 
 	/**
@@ -186,6 +185,13 @@ public class GUIText {
 	public void setTextString(String textString){
 		this.textString = textString;
 		TextMaster.loadText(this);
+	}
+
+	public void load(){
+		TextMaster.loadText(this);
+	}
+	public void unLoad(){
+		TextMaster.removeText(this);
 	}
 
 }

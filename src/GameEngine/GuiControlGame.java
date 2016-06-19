@@ -29,53 +29,48 @@ public class GuiControlGame {
     }
 
     public void checkButtonsClick(){
-        if(System.currentTimeMillis()-time>100){
 
-            Vector2f mouseC = picker.getNormalCoord();
+        Vector2f mouseC = picker.getNormalCoord();
 
-            if (!playerControl.pause && (mouseC.x >= 0.867) && (mouseC.x <= 0.924) && (mouseC.y <= 0.939) && (mouseC.y >= 0.855)) {
-                pause.select();
-                playerControl.wait =true;
-                play.deselect();
-                menu.deselect();
-                if(Mouse.isButtonDown(0)){
-                    checkButtons();
-                }
-
+        if (!playerControl.pause && (mouseC.x >= 0.867) && (mouseC.x <= 0.924) && (mouseC.y <= 0.939) && (mouseC.y >= 0.855)) {
+            pause.select();
+            playerControl.wait =true;
+            play.deselect();
+            menu.deselect();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtons();
                 time = System.currentTimeMillis();
-
-
-            }else if (playerControl.pause && (mouseC.x >= -0.268) && (mouseC.x <= 0.27) && (mouseC.y <= 0.25) && (mouseC.y >= 0.04)) {
-                play.select();
-                pause.deselect();
-                menu.deselect();
-                if(Mouse.isButtonDown(0)){
-                    checkButtons();
-                }
-
-                time = System.currentTimeMillis();
-
-            }else if (playerControl.pause && (mouseC.x >= -0.268) && (mouseC.x <= 0.27) && (mouseC.y <= -0.04) && (mouseC.y >= -0.25)) {
-                menu.select();
-                pause.deselect();
-                play.deselect();
-                if(Mouse.isButtonDown(0)){
-                    checkButtons();
-                }
-                time = System.currentTimeMillis();
-
-            }else {
-                menu.deselect();
-                pause.deselect();
-                play.deselect();
-                playerControl.wait =false;
-
             }
 
 
 
-            updateText();
+        }else if (playerControl.pause && (mouseC.x >= -0.268) && (mouseC.x <= 0.27) && (mouseC.y <= 0.25) && (mouseC.y >= 0.04)) {
+            play.select();
+            pause.deselect();
+            menu.deselect();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtons();
+                time = System.currentTimeMillis();
+            }
+
+        }else if (playerControl.pause && (mouseC.x >= -0.268) && (mouseC.x <= 0.27) && (mouseC.y <= -0.04) && (mouseC.y >= -0.25)) {
+            menu.select();
+            pause.deselect();
+            play.deselect();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtons();
+                time = System.currentTimeMillis();
+            }
+        }else {
+            menu.deselect();
+            pause.deselect();
+            play.deselect();
+            playerControl.wait =false;
+
         }
+
+        updateText();
+
     }
 
     public void updateText(){
