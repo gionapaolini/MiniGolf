@@ -17,6 +17,7 @@ import GraphicsEngine.Textures.ModelTexture;
 import PhysicsEngine.Physics;
 import Toolbox.Maths;
 import Toolbox.MousePicker;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Matrix4f;
@@ -39,9 +40,9 @@ public class ControlGui {
     Camera camera;
     MousePicker picker;
 
-    GuiButton ballButton, putHoleButton, cubeButton, slopeButton, barButton, selectButton, saveButton, playButton, closeButton;
+    GuiButton ballButton, cubeButton, slopeButton, barButton, selectButton, saveButton, playButton, closeButton;
 
-    boolean selectMode, isColliding;
+    boolean selectMode, isColliding, widthMode;
 
     GolfObject currentObj;
     GolfObject overMouse;
@@ -56,8 +57,11 @@ public class ControlGui {
     ModelTexture red;
 
     long timeClickGui = 0;
+    long timeTerrainSize = 0;
 
-    Vector3f previousPosition;
+    Vector3f previousPositionHole, previousPositionBall;
+
+    private float mostNegativeX, mostNegativeZ, mostPositiveX, mostPositiveZ;
 
 
     public ControlGui(Loader loader, GuiCourseCreator guiCourseCreator, List<Ball> balls, List<Obstacle> obstacles, PutHole putHoles, Terrain terrain, Camera camera, MousePicker picker) {
@@ -70,7 +74,7 @@ public class ControlGui {
         this.picker = picker;
 
         ballButton = guiCourseCreator.getBallButton();
-        putHoleButton = guiCourseCreator.getPutholeButton();
+        saveButton = guiCourseCreator.getSaveButtonButton();
         cubeButton = guiCourseCreator.getCubeButton();
         slopeButton = guiCourseCreator.getSlopeButton();
         barButton = guiCourseCreator.getBarButton();
@@ -82,6 +86,9 @@ public class ControlGui {
       //  black = new ModelTexture(loader.loadTexture("black"));
         this.putHole = putHoles;
         selectMode = false;
+        attachNewBall();
+        executeClick();
+        saveButton.select();
     }
 
     public void moveCurrentObj(){
@@ -123,6 +130,7 @@ public class ControlGui {
         checkButtonClicks();
         moveCurrentObj();
         transformCurrentObject();
+        changeSizeTerrain();
 
     }
 
@@ -205,7 +213,7 @@ public class ControlGui {
                     currentObj.getModel().setScale(currentObj.getModel().getScale() - 0.05f);
                 }
             }
-            if(!(currentObj instanceof PutHole)){
+            if(!(currentObj instanceof PutHole) && !(currentObj instanceof Ball && balls.size()==1)){
                 if(Keyboard.isKeyDown(Keyboard.KEY_DELETE)){
                     isColliding = true;
                     executeClick();
@@ -215,6 +223,8 @@ public class ControlGui {
 
 
     }
+
+
 
     public void checkButtonClicks(){
 
@@ -229,57 +239,51 @@ public class ControlGui {
 
                 if ((mouseC.x >= -0.898) && (mouseC.x <= -0.6) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
                     ballButton.swap();
-                    putHoleButton.deselect();
                     cubeButton.deselect();
                     slopeButton.deselect();
                     barButton.deselect();
                     selectButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= -0.598) && (mouseC.x <= -0.3) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
-                    putHoleButton.swap();
+                    cubeButton.swap();
                     ballButton.deselect();
-                    cubeButton.deselect();
                     slopeButton.deselect();
                     barButton.deselect();
                     selectButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= -0.298) && (mouseC.x <= 0) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
-                    cubeButton.swap();
+                    barButton.swap();
                     ballButton.deselect();
-                    putHoleButton.deselect();
                     slopeButton.deselect();
-                    barButton.deselect();
+                    cubeButton.deselect();
                     selectButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= 0) && (mouseC.x <= 0.299) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
-                    barButton.swap();
+                    slopeButton.swap();
                     ballButton.deselect();
-                    putHoleButton.deselect();
                     cubeButton.deselect();
-                    slopeButton.deselect();
+                    barButton.deselect();
                     selectButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= 0.301) && (mouseC.x <= 0.6) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
-                    slopeButton.swap();
-                    ballButton.deselect();
-                    putHoleButton.deselect();
-                    cubeButton.deselect();
-                    barButton.deselect();
-                    selectButton.deselect();
-                    checkButtons();
-                }else if ((mouseC.x >= 0.601) && (mouseC.x <= 0.9) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
                     selectButton.swap();
                     ballButton.deselect();
-                    putHoleButton.deselect();
                     cubeButton.deselect();
                     barButton.deselect();
                     slopeButton.deselect();
                     checkButtons();
+                }else if ((mouseC.x >= 0.601) && (mouseC.x <= 0.9) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
+                    selectButton.deselect();
+                    ballButton.deselect();
+                    cubeButton.deselect();
+                    barButton.deselect();
+                    slopeButton.deselect();
+                    checkButtons();
+                    //save
 
                 }else{
 
                     ballButton.deselect();
-                    putHoleButton.deselect();
                     cubeButton.deselect();
                     slopeButton.deselect();
                     barButton.deselect();
@@ -299,18 +303,29 @@ public class ControlGui {
     private void executeClick(){
         if(selectMode && overMouse!=null){
                 currentObj = overMouse;
+                if(currentObj instanceof Ball && balls.size()==1){
+                    previousPositionBall = currentObj.getPosition();
+                }else if(currentObj instanceof PutHole){
+                    previousPositionHole = currentObj.getPosition();
+                }
+
                 selectMode = false;
 
         }else if(currentObj!=null){
             if(isColliding){
                 if(currentObj instanceof PutHole){
-                    putHole.setPosition(previousPosition);
+                    putHole.setPosition(previousPositionHole);
                     putHole.unsetCollideColor();
-                }else if(currentObj instanceof Ball){
+                }else if(currentObj instanceof Ball && balls.size()>1){
                     balls.remove(currentObj);
+                }else if(currentObj instanceof Ball && balls.size()==1){
+                    currentObj.setPosition(previousPositionBall);
                 }else {
                     obstacles.remove(currentObj);
                 }
+                setAllLimitTerrain();
+            }else {
+                setLimitTerrain(currentObj);
             }
             currentObj = null;
         }
@@ -319,20 +334,12 @@ public class ControlGui {
     private void checkButtons(){
         selectMode = false;
         if(!selectButton.isSelected() && currentObj!=null){
-            if(currentObj instanceof PutHole){
-                putHole.setPosition(previousPosition);
-            }else if(currentObj instanceof Ball){
-                balls.remove(currentObj);
-            }else {
-                obstacles.remove(currentObj);
-            }
-            currentObj = null;
+            isColliding=true;
+            executeClick();
         }
 
         if(ballButton.isSelected()){
             attachNewBall();
-        }else if(putHoleButton.isSelected()){
-            attachPutHole();
         }else if(cubeButton.isSelected()){
             attachNewCube();
         }else if(barButton.isSelected()){
@@ -347,13 +354,15 @@ public class ControlGui {
     }
 
     private void attachNewBall(){
-        if(ballModel==null) {
-            ballModel = OBJLoader.loadObjModel("ball", loader);
+        if(balls.size()<5) {
+            if (ballModel == null) {
+                ballModel = OBJLoader.loadObjModel("ball", loader);
+            }
+            TexturedModel model = new TexturedModel(ballModel, white);
+            Entity n = new Entity(model, new Vector3f(0, 0, 0), 0, 0, 0, 1);
+            currentObj = new Ball(n);
+            balls.add((Ball) currentObj);
         }
-        TexturedModel model = new TexturedModel(ballModel,white);
-        Entity n = new Entity(model,new Vector3f(0,0,0),0,0,0,1);
-        currentObj = new Ball(n);
-        balls.add((Ball)currentObj);
     }
 
     private void attachNewCube(){
@@ -386,10 +395,71 @@ public class ControlGui {
         obstacles.add((Obstacle)currentObj);
     }
 
-    private void attachPutHole(){
-        currentObj = putHole;
-        previousPosition = putHole.getPosition();
+    private void setAllLimitTerrain(){
+        mostPositiveX = -100;
+        mostNegativeX = 100;
+        mostNegativeZ = 100;
+        mostPositiveZ = -100;
+        for(Obstacle obstacle: obstacles){
+            setLimitTerrain(obstacle);
+        }
+        for(Ball obstacle: balls){
+            setLimitTerrain(obstacle);
+        }
+        setLimitTerrain(putHole);
     }
+
+    private void setLimitTerrain(GolfObject obj){
+        Vector3f[] points = obj.getWorldProjectionPoint();
+        for(int i=0;i<4;i++){
+            if(points[i].x<mostNegativeX)
+                mostNegativeX = points[i].x;
+            if(points[i].z<mostNegativeZ)
+                mostNegativeZ = points[i].z;
+            if(points[i].x>mostPositiveX)
+                mostPositiveX = points[i].x;
+            if(points[i].z>mostPositiveZ)
+                mostPositiveZ = points[i].z;
+        }
+    }
+
+    private void changeSizeTerrain(){
+        if(currentObj==null) {
+            float width = terrain.width;
+            float height = terrain.height;
+            long current_time = System.currentTimeMillis();
+
+            if ((current_time - timeTerrainSize) > 250) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_DIVIDE)) {
+                    widthMode = !widthMode;
+                    timeTerrainSize = System.currentTimeMillis();
+                }
+
+
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_ADD)) {
+                if (widthMode && width < 50) {
+                    width += 1;
+                } else if (!widthMode && height < 50) {
+                    height += 1;
+                }
+                terrain.changeSize(width, height, loader);
+
+
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_SUBTRACT)) {
+                System.out.println("If "+widthMode+" and "+ (width / 2)+">"+mostPositiveX+" and "+(-width / 2)+"<"+mostNegativeX+" and "+width +">1");
+                if (widthMode && (width / 2) > mostPositiveX +0.5f && (-width / 2) < mostNegativeX -0.5f && width > 1) {
+                    width -= 1;
+                } else if (!widthMode && (height / 2) > mostPositiveZ + 0.5f && (-height / 2) < mostNegativeZ -0.5f && height > 1) {
+                    height -= 1;
+                }
+                terrain.changeSize(width, height, loader);
+
+            }
+        }
+    }
+
 
 
 }
