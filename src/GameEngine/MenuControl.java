@@ -30,8 +30,12 @@ public class MenuControl {
     GUIText text,text1,text2,text3,n,n1,n2,n3;
     public boolean settingState;
     List<GuiTexture> guis;
+    long time;
 
-    public MenuControl(GuiMenu menu, MousePicker picker){
+    Settings setting;
+
+
+    public MenuControl(GuiMenu menu, MousePicker picker, Settings setting){
         this.menu = menu;
         this.picker = picker;
         courseDesigner = menu.getCourseDesigner();
@@ -55,6 +59,8 @@ public class MenuControl {
         guis.add(settings.getGuiTexture());
         guis.add(play.getGuiTexture());
 
+        this.setting = setting;
+
 
 
     }
@@ -72,8 +78,9 @@ public class MenuControl {
             settings.select();
             courseDesigner.deselect();
             play.deselect();
-            if(Mouse.isButtonDown(0)){
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
                 checkButtonState();
+                time = System.currentTimeMillis();
             }
 
         }else if (!settingState && (mouseC.x >= -0.396) && (mouseC.x <= 0.398) && (mouseC.y <= -0.161) && (mouseC.y >= -0.469)) {
@@ -82,30 +89,66 @@ public class MenuControl {
             courseDesigner.deselect();
         }else if (settingState && (mouseC.x >= 0.129) && (mouseC.x <= 0.206) && (mouseC.y <= 0.769) && (mouseC.y >= 0.702)) {
             nPlayer.setTexturePlus();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
 
         }else if (settingState && (mouseC.x >= 0.129) && (mouseC.x <= 0.207) && (mouseC.y <= 0.697) && (mouseC.y >= 0.627)) {
             nPlayer.setTextureMinus();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
 
         }else if (settingState && (mouseC.x >= 0.129) && (mouseC.x <= 0.207) && (mouseC.y <= 0.369) && (mouseC.y >= 0.302)) {
             nBot.setTexturePlus();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
 
         }else if (settingState && (mouseC.x >= 0.129) && (mouseC.x <= 0.207) && (mouseC.y <= 0.297) && (mouseC.y >= 0.227)) {
             nBot.setTextureMinus();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
 
         }else if (settingState && (mouseC.x >= 0.129) && (mouseC.x <= 0.207) && (mouseC.y <= -0.03) && (mouseC.y >= -0.094)) {
             lvlBot.setTexturePlus();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
 
         }else if (settingState && (mouseC.x >= 0.129) && (mouseC.x <= 0.207) && (mouseC.y <= -0.102) && (mouseC.y >= -0.172)) {
             lvlBot.setTextureMinus();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
 
         }else if (settingState && (mouseC.x >= 0.129) && (mouseC.x <= 0.207) && (mouseC.y <= -0.433) && (mouseC.y >= -0.497)) {
             timeTurn.setTexturePlus();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
 
         }else if (settingState && (mouseC.x >= 0.129) && (mouseC.x <= 0.207) && (mouseC.y <= -0.5) && (mouseC.y >= -0.572)) {
             timeTurn.setTextureMinus();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
 
         }else if (settingState && (mouseC.x >= -0.198) && (mouseC.x <= 0.20) && (mouseC.y <= -0.697) && (mouseC.y >= -0.894)) {
             back.select();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
 
         }else {
             play.deselect();
@@ -120,7 +163,7 @@ public class MenuControl {
     }
 
     private void checkButtonState(){
-        if(settings.isSelected()){
+        if(!settingState && settings.isSelected()){
             settingState = true;
             menu.getGuis().remove(courseDesigner.getGuiTexture());
             menu.getGuis().remove(settings.getGuiTexture());
@@ -139,6 +182,67 @@ public class MenuControl {
             n2.load();
             n3.load();
 
+        }else if(settingState && back.isSelected()){
+            settingState=false;
+            menu.getGuis().add(courseDesigner.getGuiTexture());
+            menu.getGuis().add(settings.getGuiTexture());
+            menu.getGuis().add(play.getGuiTexture());
+            guis.remove(nPlayer.getGuiTexture());
+            guis.remove(nBot.getGuiTexture());
+            guis.remove(lvlBot.getGuiTexture());
+            guis.remove(timeTurn.getGuiTexture());
+            guis.remove(back.getGuiTexture());
+            text.unLoad();
+            text1.unLoad();
+            text2.unLoad();
+            text3.unLoad();
+            n.unLoad();
+            n1.unLoad();
+            n2.unLoad();
+            n3.unLoad();
+        }else if(settingState && nPlayer.isPlus()){
+            if(setting.nHuman+setting.nBot<5) {
+                setting.nHuman++;
+                n.setTextString(""+setting.nHuman);
+            }
+        }else if(settingState && nPlayer.isMinus()){
+            if(setting.nHuman>1) {
+                setting.nHuman--;
+                n.setTextString(""+setting.nHuman);
+
+            }
+        }else if(settingState && nBot.isMinus()){
+            if(setting.nBot>0) {
+                setting.nBot--;
+                n1.setTextString(""+setting.nBot);
+
+            }
+        }else if(settingState && nBot.isPlus()){
+            if(setting.nHuman+setting.nBot<5) {
+                setting.nBot++;
+                n1.setTextString(""+setting.nBot);
+            }
+        }else if(settingState && lvlBot.isPlus()){
+            if(setting.lvlBot<3) {
+                setting.lvlBot++;
+                n2.setTextString(""+setting.lvlBot);
+            }
+        }else if(settingState && lvlBot.isMinus()){
+            if(setting.lvlBot>1) {
+                setting.lvlBot--;
+                n2.setTextString(""+setting.lvlBot);
+            }
+        }else if(settingState && timeTurn.isPlus()){
+            if(setting.round<60) {
+                setting.round++;
+                n3.setTextString(""+setting.round);
+            }
+        }else if(settingState && timeTurn.isMinus()){
+            if(setting.round>10) {
+                setting.round--;
+                n3.setTextString(""+setting.round);
+
+            }
         }
     }
 }

@@ -38,15 +38,26 @@ public class TestMenu {
         Light light = new Light(new Vector3f(0,20,0),new Vector3f(1,1,1));
         Camera camera = new Camera();
         MasterRenderer masterRenderer = new MasterRenderer();
-
+        Settings settings = new Settings();
 
         TextMaster.init(loader);
         MousePicker mousePicker = new MousePicker();
         GuiMenu menu = new GuiMenu(loader);
-        MenuControl menuControl = new MenuControl(menu,mousePicker);
+        MenuControl menuControl = new MenuControl(menu,mousePicker,settings);
         MasterRenderer renderer = new MasterRenderer();
+        int choose = 2;
         while (!Display.isCloseRequested()){
             masterRenderer.render(light,camera);
+            switch(choose){
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+
+            }
+
             menuControl.checkButtonClick();
             menu.render();
             DisplayManager.updateDisplay();
