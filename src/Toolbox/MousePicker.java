@@ -24,7 +24,7 @@ public class MousePicker {
 
     private Matrix4f projectionMatrix;
     private Matrix4f viewMatrix;
-    private Camera camera;
+    public Camera camera;
 
     public MousePicker(Camera cam, Matrix4f projectionMatrix, Terrain terrain){
         this.camera = cam;

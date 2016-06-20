@@ -31,7 +31,6 @@ public class MenuControl {
     public boolean settingState;
     List<GuiTexture> guis;
     long time;
-
     Settings setting;
 
 
@@ -62,7 +61,6 @@ public class MenuControl {
         this.setting = setting;
 
 
-
     }
 
     public void checkButtonClick(){
@@ -74,6 +72,10 @@ public class MenuControl {
             courseDesigner.select();
             settings.deselect();
             play.deselect();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
         }else if (!settingState && (mouseC.x >= -0.396) && (mouseC.x <= 0.398) && (mouseC.y <= 0.241) && (mouseC.y >= -0.069)) {
             settings.select();
             courseDesigner.deselect();
@@ -200,6 +202,8 @@ public class MenuControl {
             n1.unLoad();
             n2.unLoad();
             n3.unLoad();
+        }else if(!settingState && courseDesigner.isSelected()){
+            setting.setPhase(1);
         }else if(settingState && nPlayer.isPlus()){
             if(setting.nHuman+setting.nBot<5) {
                 setting.nHuman++;

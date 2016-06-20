@@ -1,10 +1,10 @@
 package CourseDesigner;
 
+import GameEngine.Settings;
 import GolfObjects.Ball;
 import GolfObjects.GolfObject;
 import GolfObjects.Obstacle;
 import GolfObjects.PutHole;
-import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Terrain;
 import GraphicsEngine.Guis.GuiButton;
@@ -37,7 +37,6 @@ public class ControlGui {
     List<Obstacle> obstacles;
     PutHole putHole;
     Terrain terrain;
-    Camera camera;
     MousePicker picker;
 
     GuiButton ballButton, cubeButton, slopeButton, barButton, selectButton, saveButton, playButton, closeButton;
@@ -59,18 +58,20 @@ public class ControlGui {
     long timeClickGui = 0;
     long timeTerrainSize = 0;
 
+    Settings settings;
+
     Vector3f previousPositionHole, previousPositionBall;
 
     private float mostNegativeX, mostNegativeZ, mostPositiveX, mostPositiveZ;
 
 
-    public ControlGui(Loader loader, GuiCourseCreator guiCourseCreator, List<Ball> balls, List<Obstacle> obstacles, PutHole putHoles, Terrain terrain, Camera camera, MousePicker picker) {
+    public ControlGui(Loader loader, GuiCourseCreator guiCourseCreator, List<Ball> balls, List<Obstacle> obstacles, PutHole putHoles, Terrain terrain, MousePicker picker, Settings settings) {
         this.loader = loader;
         this.guiCourseCreator = guiCourseCreator;
         this.balls = balls;
         this.obstacles = obstacles;
         this.terrain = terrain;
-        this.camera = camera;
+
         this.picker = picker;
 
         ballButton = guiCourseCreator.getBallButton();
@@ -86,33 +87,40 @@ public class ControlGui {
       //  black = new ModelTexture(loader.loadTexture("black"));
         this.putHole = putHoles;
         selectMode = false;
+        saveButton.select();
+        this.settings = settings;
         attachNewBall();
         executeClick();
-        saveButton.select();
     }
 
     public void moveCurrentObj(){
         if(currentObj!=null) {
+
             picker.update();
             Vector3f point = picker.getCurrentTerrainPoint();
             if (point != null) {
                 currentObj.setPosition(point);
                 isColliding = false;
+                Entity currentEntity;
+                if(currentObj instanceof PutHole)
+                    currentEntity= ((PutHole) currentObj).getFakeHole();
+                else
+                    currentEntity = currentObj.getModel();
                 for (Ball ball: balls) {
-                    if (currentObj != ball && Physics.checkBroadCollision(currentObj.getModel(), ball.getModel())) {
+                    if (currentObj != ball && Physics.checkBroadCollision(currentEntity, ball.getModel())) {
                         isColliding = true;
                         break;
                     }
                 }
                 if (!isColliding)
                     for (Obstacle obstacle : obstacles) {
-                        if (currentObj != obstacle && Physics.checkBroadCollision(currentObj.getModel(), obstacle.getModel())) {
+                        if (currentObj != obstacle && Physics.checkBroadCollision(currentEntity, obstacle.getModel())) {
                             isColliding = true;
                             break;
                         }
                     }
                 if (!isColliding)
-                    if (currentObj != putHole && Physics.checkBroadCollision(currentObj.getModel(), putHole.getModel())) {
+                    if (currentObj != putHole && Physics.checkBroadCollision(currentEntity, putHole.getFakeHole())) {
                         isColliding = true;
                     }
                 if (isColliding) {
@@ -131,6 +139,11 @@ public class ControlGui {
         moveCurrentObj();
         transformCurrentObject();
         changeSizeTerrain();
+
+    }
+
+    public void applyNumberBalls(){
+        int n = settings.getnBot()+settings.getnHuman();
 
     }
 
@@ -173,7 +186,11 @@ public class ControlGui {
     }
 
     private boolean pointInsideRectangle(Vector3f point,GolfObject obj){
-        Vector3f[] points = obj.getWorldProjectionPoint();
+        Vector3f[] points;
+        if(obj instanceof PutHole)
+            points = ((PutHole) obj).getFakeHole().getWorldProjectionPoints();
+        else
+            points = obj.getWorldProjectionPoint();
         float area1 = areaTriangle(points[0],point,points[2]);
         float area2 = areaTriangle(points[2],point,points[3]);
         float area3 = areaTriangle(points[3],point,points[1]);
@@ -274,6 +291,7 @@ public class ControlGui {
                     slopeButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= 0.601) && (mouseC.x <= 0.9) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
+                    settings.setPhase(2);
                     selectButton.deselect();
                     ballButton.deselect();
                     cubeButton.deselect();
@@ -337,6 +355,7 @@ public class ControlGui {
         if(!selectButton.isSelected() && currentObj!=null){
             isColliding=true;
             executeClick();
+
         }
 
         if(ballButton.isSelected()){
@@ -355,6 +374,7 @@ public class ControlGui {
     }
 
     private void attachNewBall(){
+       // System.out.println(settings);
         if(balls.size()<5) {
             if (ballModel == null) {
                 ballModel = OBJLoader.loadObjModel("ball", loader);
