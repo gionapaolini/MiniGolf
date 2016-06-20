@@ -24,13 +24,15 @@ public class MousePicker {
 
     private Matrix4f projectionMatrix;
     private Matrix4f viewMatrix;
-    private Camera camera;
+    public Camera camera;
 
     public MousePicker(Camera cam, Matrix4f projectionMatrix, Terrain terrain){
         this.camera = cam;
         this.projectionMatrix = projectionMatrix;
         this.viewMatrix = Maths.createViewMatrix(camera);
         this.terrain = terrain;
+    }
+    public MousePicker(){
     }
 
     public Vector3f getCurrentRay(){

@@ -26,6 +26,7 @@ public class GUIText {
 	private FontType font;
 
 	private boolean centerText = false;
+	private boolean isLoaded=false;
 
 	/**
 	 * Creates a new text, loads the text's quads into a VAO, and adds the text
@@ -60,7 +61,6 @@ public class GUIText {
 		this.position = position;
 		this.lineMaxSize = maxLineLength;
 		this.centerText = centered;
-		TextMaster.loadText(this);
 	}
 
 	/**
@@ -184,8 +184,26 @@ public class GUIText {
 	}
 
 	public void setTextString(String textString){
+		unLoad();
 		this.textString = textString;
-		TextMaster.loadText(this);
+		load();
+	}
+
+	public boolean isLoaded(){
+		return isLoaded;
+	}
+
+	public void load(){
+		if(!isLoaded()) {
+			TextMaster.loadText(this);
+			isLoaded = true;
+		}
+	}
+	public void unLoad(){
+		if(isLoaded()) {
+			TextMaster.removeText(this);
+			isLoaded = false;
+		}
 	}
 
 }

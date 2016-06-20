@@ -80,12 +80,10 @@ public class TestGame {
         List<Obstacle> obstacles = new ArrayList<Obstacle>();
         obstacles.add(obstacle);
 
+        MousePicker picker = new MousePicker();
+        PlayerControl playerControl = new PlayerControl(players,camera, arrow,30,picker);
 
-        PlayerControl playerControl = new PlayerControl(players,camera, arrow,30);
-
-        MousePicker picker = new MousePicker(camera,renderer.getProjectionMatrix(), terrain);
-
-        GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,picker);
+        GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,picker,null);
 
         Entity putHoleEnt = new Entity(new TexturedModel(OBJLoader.loadObjModel("underHole",loader),black),new Vector3f(2,-0.01f,2),0,0,0,1);
         Entity fakeHole = new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole",loader),black),new Vector3f(2,0.001f,2),0,0,0,1);
@@ -98,7 +96,7 @@ public class TestGame {
             camera.move();
             picker.update();
             guiControlGame.checkButtonsClick();
-            playerControl.game(picker,obstacles,terrain,putHole,timePhysics);
+            playerControl.game(obstacles,terrain,putHole,timePhysics);
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(ball.getModel());

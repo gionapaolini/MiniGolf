@@ -23,20 +23,20 @@ public class PlayerControl {
     Entity arrow;
     public int nPlayer, timeLeft, maxTimeTurn;
     public boolean disabledShot, pause, wait;
-    long time = 0;
+    long time;
     long timeLeftShot = 0;
+    MousePicker picker;
 
 
-    public PlayerControl(List<Player> players, Camera camera, Entity arrow, int maxTimeTurn) {
+    public PlayerControl(List<Player> players, Camera camera, Entity arrow, int maxTimeTurn, MousePicker picker) {
         this.players = players;
         this.camera = camera;
         nPlayer = 0;
-        currentPlayer = players.get(0);
         this.arrow = arrow;
-        arrow.setPosition(currentPlayer.getBall().getPosition());
         arrow.position.y=0.001f;
-        disabledShot = false;
+        disabledShot = true;
         this.maxTimeTurn = maxTimeTurn;
+        this.picker = picker;
 
     }
 
@@ -46,6 +46,24 @@ public class PlayerControl {
         arrow.position.y=0.001f;
 
 
+    }
+
+    public void initialize(int timeLeft){
+        currentPlayer = players.get(0);
+        nPlayer = 0;
+        disabledShot = false;
+        selectPlayer();
+        this.timeLeft = timeLeft;
+        setPause(false);
+    }
+    public void destroy(){
+        currentPlayer = null;
+        disabledShot = true;
+        setPause(true);
+        for(Player player:players){
+            player.getBall().setVelocity(new Vector3f(0,0,0));
+        }
+        players.clear();
     }
 
     private void decrementTimeLeft(){
@@ -64,13 +82,12 @@ public class PlayerControl {
             diff = Maths.scalarProduct(diff, 5 * distance);
             currentPlayer.getBall().setVelocity(diff);
             disabledShot = true;
-            System.out.println("FFW");
         }
 
     }
 
-    public void game(MousePicker picker, List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time){
-        if(!pause && System.currentTimeMillis()-time >1000) {
+    public void game(List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time){
+        if(!pause && System.currentTimeMillis()-this.time>1000) {
             moveArrow(arrow, picker.getCurrentTerrainPoint());
             decrementTimeLeft();
             shot(picker.getCurrentTerrainPoint());
@@ -90,6 +107,7 @@ public class PlayerControl {
     }
 
     public void moveArrow(Entity arrow, Vector3f point){
+
         if(point!=null) {
             float angleInDegrees = Maths.GetAngleOfLineBetweenTwoPoints(arrow.getPosition(),point);
             arrow.setRy(-angleInDegrees);
@@ -131,6 +149,8 @@ public class PlayerControl {
         }else {
             pause = false;
             time = System.currentTimeMillis();
+            System.out.println(time);
+
         }
     }
 

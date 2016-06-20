@@ -81,7 +81,9 @@ public class Camera {
     }
 
     public void setCurrentPlayer(Player player){
-        this.currentPlayer = player;
+        currentPlayer = player;
+        distanceFromPlayer = 10;
+        playing = true;
     }
 
     public void moveOnSight(){
