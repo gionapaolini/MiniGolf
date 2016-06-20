@@ -17,14 +17,16 @@ public class GuiControlGame {
     GUIText text;
     long time,timeUpdate;
     MousePicker picker;
+    Settings settings;
 
-    public GuiControlGame(GuiGame guiGame, PlayerControl playerControl, MousePicker picker) {
+    public GuiControlGame(GuiGame guiGame, PlayerControl playerControl, MousePicker picker, Settings settings) {
         this.guiGame = guiGame;
         this.playerControl = playerControl;
         pause = guiGame.getPause();
         play = guiGame.getResume();
         menu = guiGame.getMenu();
         text = guiGame.getText();
+        this.settings = settings;
         this.picker = picker;
     }
 
@@ -76,7 +78,7 @@ public class GuiControlGame {
     public void updateText(){
         if(System.currentTimeMillis()-timeUpdate>1000) {
             if (playerControl.disabledShot) {
-                text.setTextString("");
+                text.unLoad();
             } else {
                 text.setTextString("Player " + (playerControl.nPlayer + 1) + " it s your turn, do your best shot! Time left: " + playerControl.timeLeft);
             }
@@ -99,6 +101,13 @@ public class GuiControlGame {
             play.swap();
             pause.swap();
 
+        }else if(menu.isSelected()){
+            guiGame.getGuis().remove(guiGame.getBackground());
+            guiGame.getGuis().remove(play.getGuiTexture());
+            guiGame.getGuis().remove(menu.getGuiTexture());
+            playerControl.destroy();
+            text.unLoad();
+            settings.setPhase(2);
         }
 
     }

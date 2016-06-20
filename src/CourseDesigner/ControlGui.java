@@ -90,7 +90,6 @@ public class ControlGui {
         saveButton.select();
         this.settings = settings;
         attachNewBall();
-        executeClick();
     }
 
     public void moveCurrentObj(){
@@ -144,6 +143,18 @@ public class ControlGui {
 
     public void applyNumberBalls(){
         int n = settings.getnBot()+settings.getnHuman();
+        if(n>balls.size()){
+            int s = balls.size();
+            for(int i=0;i<n-s;i++){
+                attachNewBall();
+            }
+        }
+        if(n<balls.size()){
+            int s = balls.size();
+            for(int i=0;i<s-n;i++){
+                balls.remove(balls.size()-1);
+            }
+        }
 
     }
 
@@ -256,11 +267,12 @@ public class ControlGui {
 
 
                 if ((mouseC.x >= -0.898) && (mouseC.x <= -0.6) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
-                    ballButton.swap();
-                    cubeButton.deselect();
-                    slopeButton.deselect();
-                    barButton.deselect();
+                    settings.setPhase(2);
                     selectButton.deselect();
+                    ballButton.deselect();
+                    cubeButton.deselect();
+                    barButton.deselect();
+                    slopeButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= -0.598) && (mouseC.x <= -0.3) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
                     cubeButton.swap();
@@ -291,14 +303,6 @@ public class ControlGui {
                     slopeButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= 0.601) && (mouseC.x <= 0.9) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
-                    settings.setPhase(2);
-                    selectButton.deselect();
-                    ballButton.deselect();
-                    cubeButton.deselect();
-                    barButton.deselect();
-                    slopeButton.deselect();
-                    checkButtons();
-                    //save
 
                 }else{
 
@@ -359,7 +363,7 @@ public class ControlGui {
         }
 
         if(ballButton.isSelected()){
-            attachNewBall();
+
         }else if(cubeButton.isSelected()){
             attachNewCube();
         }else if(barButton.isSelected()){
@@ -374,16 +378,39 @@ public class ControlGui {
     }
 
     private void attachNewBall(){
-       // System.out.println(settings);
-        if(balls.size()<5) {
-            if (ballModel == null) {
-                ballModel = OBJLoader.loadObjModel("ball", loader);
-            }
-            TexturedModel model = new TexturedModel(ballModel, white);
-            Entity n = new Entity(model, new Vector3f(0, 0, 0), 0, 0, 0, 1);
-            currentObj = new Ball(n);
-            balls.add((Ball) currentObj);
+        if (ballModel == null) {
+            ballModel = OBJLoader.loadObjModel("ball", loader);
         }
+        TexturedModel model = new TexturedModel(ballModel, white);
+        boolean colliding;
+        Entity n;
+        do {
+            colliding = false;
+            float randX = (float) Math.random() *2* (terrain.getX() + terrain.width-0.2f) - (terrain.getX() + terrain.width -0.2f);
+            float randZ = (float) Math.random() *2* (terrain.getZ() + terrain.height-0.2f) - (terrain.getZ() + terrain.height -0.2f);
+            n = new Entity(model, new Vector3f(randX, 0, randZ), 0, 0, 0, 1);
+            for(Ball ball: balls){
+                if(Physics.checkBroadCollision(n,ball.getModel())) {
+                    colliding = true;
+                    break;
+                }
+            }
+            if(!colliding) {
+                for (Obstacle obstacle : obstacles) {
+                    if (Physics.checkBroadCollision(n, obstacle.getModel())) {
+                        colliding = true;
+                        break;
+                    }
+                }
+            }
+            if(!colliding && Physics.checkBroadCollision(n,putHole.getFakeHole())) {
+                colliding = true;
+            }
+        }while(colliding);
+
+        balls.add(new Ball(n));
+        setAllLimitTerrain();
+
     }
 
     private void attachNewCube(){

@@ -1,5 +1,7 @@
 package GameEngine;
 
+import CourseDesigner.ControlGui;
+import GolfObjects.Ball;
 import GraphicsEngine.Guis.*;
 import GraphicsEngine.fontMeshCreator.FontType;
 import GraphicsEngine.fontMeshCreator.GUIText;
@@ -30,11 +32,17 @@ public class MenuControl {
     GUIText text,text1,text2,text3,n,n1,n2,n3;
     public boolean settingState;
     List<GuiTexture> guis;
-    long time;
+    public long time;
     Settings setting;
 
+    ControlGui controlGui;
 
-    public MenuControl(GuiMenu menu, MousePicker picker, Settings setting){
+    List<Player> players;
+    List<Ball> balls;
+    PlayerControl control;
+
+
+    public MenuControl(GuiMenu menu, MousePicker picker, Settings setting, ControlGui controlGui, List<Player> players, List<Ball> balls, PlayerControl control){
         this.menu = menu;
         this.picker = picker;
         courseDesigner = menu.getCourseDesigner();
@@ -57,17 +65,16 @@ public class MenuControl {
         guis.add(courseDesigner.getGuiTexture());
         guis.add(settings.getGuiTexture());
         guis.add(play.getGuiTexture());
-
+        this.controlGui = controlGui;
         this.setting = setting;
-
+        this.players = players;
+        this.balls = balls;
+        this.control = control;
 
     }
 
     public void checkButtonClick(){
         Vector2f mouseC = picker.getNormalCoord();
-        if(Mouse.isButtonDown(0)){
-            System.out.println(mouseC);
-        }
         if (!settingState && (mouseC.x >= -0.396) && (mouseC.x <= 0.398) && (mouseC.y <= 0.638) && (mouseC.y >= 0.333)) {
             courseDesigner.select();
             settings.deselect();
@@ -89,6 +96,10 @@ public class MenuControl {
             play.select();
             settings.deselect();
             courseDesigner.deselect();
+            if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>500){
+                checkButtonState();
+                time = System.currentTimeMillis();
+            }
         }else if (settingState && (mouseC.x >= 0.129) && (mouseC.x <= 0.206) && (mouseC.y <= 0.769) && (mouseC.y >= 0.702)) {
             nPlayer.setTexturePlus();
             if(Mouse.isButtonDown(0) && System.currentTimeMillis()-time>100){
@@ -204,26 +215,31 @@ public class MenuControl {
             n3.unLoad();
         }else if(!settingState && courseDesigner.isSelected()){
             setting.setPhase(1);
+
         }else if(settingState && nPlayer.isPlus()){
             if(setting.nHuman+setting.nBot<5) {
                 setting.nHuman++;
+                controlGui.applyNumberBalls();
                 n.setTextString(""+setting.nHuman);
             }
         }else if(settingState && nPlayer.isMinus()){
             if(setting.nHuman>1) {
                 setting.nHuman--;
+                controlGui.applyNumberBalls();
                 n.setTextString(""+setting.nHuman);
 
             }
         }else if(settingState && nBot.isMinus()){
             if(setting.nBot>0) {
                 setting.nBot--;
+                controlGui.applyNumberBalls();
                 n1.setTextString(""+setting.nBot);
 
             }
         }else if(settingState && nBot.isPlus()){
             if(setting.nHuman+setting.nBot<5) {
                 setting.nBot++;
+                controlGui.applyNumberBalls();
                 n1.setTextString(""+setting.nBot);
             }
         }else if(settingState && lvlBot.isPlus()){
@@ -247,6 +263,18 @@ public class MenuControl {
                 n3.setTextString(""+setting.round);
 
             }
+        }else if(!settingState && play.isSelected()){
+            int n = setting.getnHuman();
+            int n1 =setting.getnBot();
+            for(int i =0;i<n;i++){
+                players.add(new Human(balls.get(i)));
+            }
+            for(int i =n;i<n1;i++){
+                players.add(new Bot(balls.get(i)));
+            }
+            control.initialize(setting.getRound());
+            setting.setPhase(3);
+
         }
     }
 }

@@ -18,7 +18,7 @@ public class GuiCourseCreator{
     public GuiCourseCreator(Loader loader){
         this.loader = loader;
         guis = new ArrayList<GuiTexture>();
-        ballButton = new GuiButton("ballButton_on","ballButton_off",loader,-0.75f,0.85f,0.15f);
+        ballButton = new GuiButton("ballButton_on","backDesignButton_off",loader,-0.75f,0.85f,0.15f);
         cubeButton = new GuiButton("cubeButton_on","cubeButton_off",loader,-0.45f,0.85f,0.15f);
         barButton = new GuiButton("barButton_on","barButton_off",loader,-0.15f,0.85f,0.15f);
         slopeButton = new GuiButton("slopeButton_on","slopeButton_off",loader,0.15f,0.85f,0.15f);

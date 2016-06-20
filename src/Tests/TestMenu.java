@@ -45,30 +45,38 @@ public class TestMenu {
         TextMaster.init(loader);
         MousePicker mousePicker = new MousePicker(camera,masterRenderer.getProjectionMatrix(),terrain);
         GuiMenu menu = new GuiMenu(loader);
-        MenuControl menuControl = new MenuControl(menu,mousePicker,settings);
         MasterRenderer renderer = new MasterRenderer();
         ModelTexture black = new ModelTexture(loader.loadTexture("black"));
 
         Entity putHoleEnt = new Entity(new TexturedModel(OBJLoader.loadObjModel("underHole",loader),black),new Vector3f(-1,0,0),0,0,0,1);
         Entity fakeHole = new Entity(new TexturedModel(OBJLoader.loadObjModel("putHole",loader),black),new Vector3f(-1,0,0),0,0,0,1);
         PutHole putHole = new PutHole(putHoleEnt,fakeHole);
+        ModelTexture white = new ModelTexture(loader.loadTexture("white"));
 
         List<Ball> balls = new ArrayList<Ball>();
         List<Obstacle> obstacles = new ArrayList<Obstacle>();
+        List<Player> players = new ArrayList<Player>();
+        TexturedModel arrowModel = new TexturedModel(OBJLoader.loadObjModel("arrow", loader),white);
+        Entity arrow = new Entity(arrowModel, new Vector3f(1,0.001f,1), 0,0,0,1);
         ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,mousePicker,settings);
+        PlayerControl playerControl = new PlayerControl(players,camera, arrow,30, mousePicker);
+        MenuControl menuControl = new MenuControl(menu,mousePicker,settings,controlGui,players,balls,playerControl);
 
+        GuiGame guiGame = new GuiGame(loader);
+        GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,mousePicker,settings);
+
+        float timePhysics = 0.0084f;
         while (!Display.isCloseRequested()){
 
             switch(settings.getPhase()){
                 case 1:
                     camera.moveOnSight();
                     renderer.render(light,camera);
-
-
                     renderer.processTerrain(terrain);
                     guiCourseCreator.render();
                     controlGui.controls();
                     for(Ball ball: balls){
+
                         renderer.processEntity(ball.getModel());
                     }
                     for(Obstacle obstacle: obstacles){
@@ -84,6 +92,26 @@ public class TestMenu {
 
                     break;
                 case 3:
+                    mousePicker.update();
+                    guiControlGame.checkButtonsClick();
+                    playerControl.game(obstacles,terrain,putHole,timePhysics);
+                    camera.move();
+                    renderer.render(light,camera);
+                    renderer.processTerrain(terrain);
+                    for(Ball ball: balls){
+
+                        renderer.processEntity(ball.getModel());
+                    }
+                    for(Obstacle obstacle: obstacles){
+                        renderer.processEntity(obstacle.getModel());
+                    }
+                    renderer.processEntity(putHole.getFakeHole());
+                    if(!playerControl.disabledShot)
+                        renderer.processEntity(arrow);
+
+                    guiGame.render();
+
+                    menuControl.time = System.currentTimeMillis();
                     break;
 
 
