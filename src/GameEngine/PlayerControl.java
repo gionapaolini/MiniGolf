@@ -1,7 +1,5 @@
 package GameEngine;
-import GolfObjects.Ball;
-import GolfObjects.Obstacle;
-import GolfObjects.PutHole;
+import GolfObjects.*;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Terrain;
@@ -10,6 +8,8 @@ import Toolbox.Maths;
 import Toolbox.MousePicker;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -33,7 +33,7 @@ public class PlayerControl {
         this.camera = camera;
         nPlayer = 0;
         this.arrow = arrow;
-        arrow.position.y=0.001f;
+        arrow.position.y=0.1f;
         disabledShot = true;
         this.maxTimeTurn = maxTimeTurn;
         this.picker = picker;
@@ -86,13 +86,13 @@ public class PlayerControl {
 
     }
 
-    public void game(List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time){
+    public void game(List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time,List<Surface> surfaces){
         if(!pause && System.currentTimeMillis()-this.time>1000) {
             moveArrow(arrow, picker.getCurrentTerrainPoint());
             decrementTimeLeft();
             shot(picker.getCurrentTerrainPoint());
             nextPlayer();
-            applyPhysics(obstacles,terrain,putHole,time);
+            applyPhysics(obstacles,terrain,putHole,time,surfaces);
         }
     }
     public void nextPlayer(){
@@ -127,13 +127,25 @@ public class PlayerControl {
         }
     }
 
-    public void applyPhysics(List<Obstacle> obstacles,Terrain terrain,PutHole putHole,float time){
+    public void applySurfaceFriction(GolfObject obj, float time,List<Surface> surfaces){
+        for(Surface surface: surfaces){
+            if(surface.ballIsOver(obj)){
+                Physics.applyFriction(obj,time,surface.getCoefficientFriction());
+                return;
+            }
+        }
+        Physics.applyFriction(obj,time,1.5f);
+
+    }
+
+    public void applyPhysics(List<Obstacle> obstacles,Terrain terrain,PutHole putHole,float time,List<Surface> surfaces){
         for(Player player: players){
             Ball ball = player.getBall();
             if(ball.isMoving()){
                 if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
                     Physics.applyGravity(ball,time,false);
-                    Physics.applyFriction(ball,time);
+
+                    applySurfaceFriction(ball,time,surfaces);
                     Physics.terrainCollision(ball,terrain,time);
                     for(Obstacle obstacle:obstacles){
                         Physics.collision(ball,obstacle,time);

@@ -64,10 +64,10 @@ public class Physics {
 
     }
 
-    public static void applyFriction(GolfObject obj, float time){
+    public static void applyFriction(GolfObject obj, float time,float coefficient){
 
         if(!obj.isFlying()) {
-            float u = 1.5f * time;
+            float u = coefficient * time;
             Vector3f vel = obj.getVelocity();
             Vector3f newVel = new Vector3f(vel.x - (vel.x * u), vel.y - (vel.y * u), vel.z - (vel.z * u));
             if (Math.abs(newVel.x) < 0.2 && Math.abs(newVel.z) < 0.2 && obj.getPosition().y <= 0 && Math.abs(newVel.y) < 0.2) {

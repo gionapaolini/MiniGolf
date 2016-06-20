@@ -1,10 +1,7 @@
 package CourseDesigner;
 
 import GameEngine.Settings;
-import GolfObjects.Ball;
-import GolfObjects.GolfObject;
-import GolfObjects.Obstacle;
-import GolfObjects.PutHole;
+import GolfObjects.*;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Terrain;
 import GraphicsEngine.Guis.GuiButton;
@@ -35,6 +32,7 @@ public class ControlGui {
     GuiCourseCreator guiCourseCreator;
     List<Ball> balls;
     List<Obstacle> obstacles;
+    List<Surface> surfaces;
     PutHole putHole;
     Terrain terrain;
     MousePicker picker;
@@ -53,25 +51,30 @@ public class ControlGui {
 
     ModelTexture white;
     ModelTexture black;
-    ModelTexture red;
+    ModelTexture red, mud;
+    int count;
+    Vector3f[] frictionTriangle;
 
     long timeClickGui = 0;
     long timeTerrainSize = 0;
+    long timeForTriangle;
 
     Settings settings;
+
+
 
     Vector3f previousPositionHole, previousPositionBall;
 
     private float mostNegativeX, mostNegativeZ, mostPositiveX, mostPositiveZ;
 
 
-    public ControlGui(Loader loader, GuiCourseCreator guiCourseCreator, List<Ball> balls, List<Obstacle> obstacles, PutHole putHoles, Terrain terrain, MousePicker picker, Settings settings) {
+    public ControlGui(Loader loader, GuiCourseCreator guiCourseCreator, List<Ball> balls, List<Obstacle> obstacles, PutHole putHoles, Terrain terrain, MousePicker picker, Settings settings, List<Surface> surfaces) {
         this.loader = loader;
         this.guiCourseCreator = guiCourseCreator;
         this.balls = balls;
         this.obstacles = obstacles;
         this.terrain = terrain;
-
+        this.surfaces = surfaces;
         this.picker = picker;
 
         ballButton = guiCourseCreator.getBallButton();
@@ -80,11 +83,11 @@ public class ControlGui {
         slopeButton = guiCourseCreator.getSlopeButton();
         barButton = guiCourseCreator.getBarButton();
         selectButton = guiCourseCreator.getSelectButton();
-
+        frictionTriangle = new Vector3f[3];
 
         white = new ModelTexture(loader.loadTexture("white"));
         red = new ModelTexture(loader.loadTexture("red"));
-      //  black = new ModelTexture(loader.loadTexture("black"));
+        mud = new ModelTexture(loader.loadTexture("mud"));
         this.putHole = putHoles;
         selectMode = false;
         saveButton.select();
@@ -138,6 +141,7 @@ public class ControlGui {
         moveCurrentObj();
         transformCurrentObject();
         changeSizeTerrain();
+        createTriangleFriction();
 
     }
 
@@ -172,6 +176,15 @@ public class ControlGui {
                         break;
                     } else {
                         obstacle.unsetCollideColor();
+                    }
+                }
+                for (Surface surface : surfaces) {
+                    if (pointInsideRectangle(point, surface)) {
+                        overMouse = surface;
+                        surface.setCollideColor(red);
+                        break;
+                    } else {
+                        surface.unsetCollideColor();
                     }
                 }
                 for (Ball ball : balls) {
@@ -269,6 +282,8 @@ public class ControlGui {
                 if ((mouseC.x >= -0.898) && (mouseC.x <= -0.6) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
                     settings.setPhase(2);
                     selectButton.deselect();
+                    saveButton.deselect();
+
                     ballButton.deselect();
                     cubeButton.deselect();
                     barButton.deselect();
@@ -279,18 +294,24 @@ public class ControlGui {
                     ballButton.deselect();
                     slopeButton.deselect();
                     barButton.deselect();
+                    saveButton.deselect();
+
                     selectButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= -0.298) && (mouseC.x <= 0) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
                     barButton.swap();
                     ballButton.deselect();
                     slopeButton.deselect();
+                    saveButton.deselect();
+
                     cubeButton.deselect();
                     selectButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= 0) && (mouseC.x <= 0.299) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
                     slopeButton.swap();
                     ballButton.deselect();
+                    saveButton.deselect();
+
                     cubeButton.deselect();
                     barButton.deselect();
                     selectButton.deselect();
@@ -300,16 +321,25 @@ public class ControlGui {
                     ballButton.deselect();
                     cubeButton.deselect();
                     barButton.deselect();
+                    saveButton.deselect();
+
                     slopeButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= 0.601) && (mouseC.x <= 0.9) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
+                    saveButton.swap();
+                    ballButton.deselect();
+                    cubeButton.deselect();
+                    slopeButton.deselect();
+                    barButton.deselect();
 
+                    selectButton.deselect();
                 }else{
 
                     ballButton.deselect();
                     cubeButton.deselect();
                     slopeButton.deselect();
                     barButton.deselect();
+                    saveButton.deselect();
                     //selectButton.deselect();
                     executeClick();
                     checkButtons();
@@ -343,6 +373,8 @@ public class ControlGui {
                     balls.remove(currentObj);
                 }else if(currentObj instanceof Ball && balls.size()==1){
                     currentObj.setPosition(previousPositionBall);
+                }else if(currentObj instanceof Surface){
+                    surfaces.remove(currentObj);
                 }else {
                     obstacles.remove(currentObj);
                 }
@@ -470,6 +502,70 @@ public class ControlGui {
                 mostPositiveZ = points[i].z;
         }
     }
+
+    private void createTriangleFriction(){
+
+
+        if(Keyboard.isKeyDown(Keyboard.KEY_X) || Keyboard.isKeyDown(Keyboard.KEY_C)){
+            picker.update();
+            if(System.currentTimeMillis()-timeForTriangle>500 && Mouse.isButtonDown(0) && picker.getCurrentTerrainPoint()!=null){
+
+                frictionTriangle[count] = picker.getCurrentTerrainPoint();
+                count++;
+                timeForTriangle = System.currentTimeMillis();
+                if(count==3){
+                    float[] vertexArray = new float[9];
+                    for(int j=0;j<3;j++){
+                        vertexArray[j*3]=frictionTriangle[j].x;
+                        vertexArray[j*3+1]=frictionTriangle[j].y+0.008f;
+                        vertexArray[j*3+2]=frictionTriangle[j].z;
+                    }
+                    int[] indices = new int[3];
+                    indices[0] = 0;
+                    indices[1] = 1;
+                    indices[2] = 2;
+                    float[] textureArray = new float[3*2];
+                    for(int i=0;i<3;i++){
+                        textureArray[i*2]=0;
+                        textureArray[i*2+1]=0;
+                    }
+                    float[] normalArray = new float[3*3];
+                    for(int j=0;j<3;j++){
+                        normalArray[j*3]=0;
+                        normalArray[j*3+1]=1;
+                        normalArray[j*3+2]=0;
+                    }
+
+                    for(int j=0;j<9;j++){
+                        System.out.println(vertexArray[j]);
+                    }
+
+
+
+
+                    RawModel model = loader.loadToVAO(vertexArray,textureArray,normalArray,indices);
+
+                    model.setVerticesArray(vertexArray);
+                    model.setNormalsArray(normalArray);
+                    model.setIndicesArray(indices);
+                    if(Keyboard.isKeyDown(Keyboard.KEY_X)) {
+                        TexturedModel model1 = new TexturedModel(model, white);
+                        Entity newEnt = new Entity(model1, new Vector3f(0, 0, 0), 0, 0, 0, 1);
+                        surfaces.add(new Surface(newEnt, 8f,frictionTriangle));
+                    }else {
+                        TexturedModel model1 = new TexturedModel(model, mud);
+                        Entity newEnt = new Entity(model1, new Vector3f(0, 0, 0), 0, 0, 0, 1);
+                        surfaces.add(new Surface(newEnt, 8f,frictionTriangle));
+                    }
+                    count = 0;
+                }
+            }
+        }else {
+            count=0;
+        }
+    }
+
+
 
     private void changeSizeTerrain(){
         if(currentObj==null) {

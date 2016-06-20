@@ -96,7 +96,7 @@ public class TestGame {
             camera.move();
             picker.update();
             guiControlGame.checkButtonsClick();
-            playerControl.game(obstacles,terrain,putHole,timePhysics);
+            playerControl.game(obstacles,terrain,putHole,timePhysics,null);
             renderer.render(light,camera);
             renderer.processTerrain(terrain);
             renderer.processEntity(ball.getModel());

@@ -74,7 +74,7 @@ public class TestPhysics{
             picker.update();
             playerControl.moveArrow(arrow,picker.getCurrentTerrainPoint());
             Physics.applyGravity(ball,time, false);
-            Physics.applyFriction(ball,time);
+            Physics.applyFriction(ball,time,1.5f);
             if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
                 playerControl.nextPlayer();
             }
