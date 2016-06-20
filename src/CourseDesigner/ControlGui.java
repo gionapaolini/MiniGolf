@@ -235,10 +235,10 @@ public class ControlGui {
                     currentObj.getModel().setRy(currentObj.getModel().getRy() - 1);
                 }
                 if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8)) {
-                    currentObj.getModel().setScale(currentObj.getModel().getScale() + 0.05f);
+                    currentObj.getModel().setScale(currentObj.getModel().getScale() + 0.025f);
                 }
                 if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) {
-                    currentObj.getModel().setScale(currentObj.getModel().getScale() - 0.05f);
+                    currentObj.getModel().setScale(currentObj.getModel().getScale() - 0.025f);
                 }
             }
             if(!(currentObj instanceof PutHole) && !(currentObj instanceof Ball && balls.size()==1)){

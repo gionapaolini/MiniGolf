@@ -96,7 +96,7 @@ public class PlayerControl {
         }
     }
     public void nextPlayer(){
-        if((!currentPlayer.getBall().isMoving() && disabledShot)||(timeLeft<0)) {
+        if((!isMotion() && disabledShot)||(timeLeft<0)) {
             nPlayer += 1;
             nPlayer %= players.size();
             currentPlayer = players.get(nPlayer);
@@ -104,6 +104,15 @@ public class PlayerControl {
             disabledShot = false;
             timeLeft = maxTimeTurn;
         }
+    }
+
+    public boolean isMotion(){
+        for(Player player: players){
+            if(player.getBall().isMoving()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void moveArrow(Entity arrow, Vector3f point){
@@ -128,6 +137,11 @@ public class PlayerControl {
                     Physics.terrainCollision(ball,terrain,time);
                     for(Obstacle obstacle:obstacles){
                         Physics.collision(ball,obstacle,time);
+                    }
+                    for(Player player2: players){
+                        if(player2 != player){
+                            Physics.collisionBall(player.getBall(),player2.getBall(),time);
+                        }
                     }
                     Physics.setNewPosition(ball,time,false);
                 }else {
