@@ -195,7 +195,7 @@ public class ControlGui {
                     }
                 }
                 for (Surface surface : surfaces) {
-                    if (pointInsideRectangle(point, surface)) {
+                    if (surface.mouseOver(point)) {
                         overMouse = surface;
                         surface.setCollideColor(red);
                         break;
@@ -270,9 +270,25 @@ public class ControlGui {
                     currentObj.getModel().setScale(currentObj.getModel().getScale() - 0.025f);
                 }
             }
+            if (Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
+                isColliding = true;
+                executeClick();
+                deactivateButtons();
+                checkButtons();
+
+            }
+
         }
 
 
+    }
+
+    public void deactivateButtons(){
+        ballButton.deselect();
+        cubeButton.deselect();
+        slopeButton.deselect();
+        barButton.deselect();
+        saveButton.deselect();
     }
 
 
@@ -573,6 +589,17 @@ public class ControlGui {
                         TexturedModel model1 = new TexturedModel(model, sand);
                         Entity newEnt1 = new Entity(model1, new Vector3f(centreX, 0, centreZ), 0, 0, 0, 1);
                         surfaces.add(new Surface(newEnt1,16f,frictionTriangle, "sand"));
+                    }
+                    System.out.println("Current Triangle");
+                    for(int i =0;i<3;i++){
+                        System.out.println(frictionTriangle[i]);
+                    }
+                    System.out.println("Surface list");
+
+                    for(Surface surface: surfaces) {
+                        System.out.println("Triangle");
+                        for (int i=0;i<3;i++)
+                        System.out.println(surface.points[i]);
                     }
                     count = 0;
                 }

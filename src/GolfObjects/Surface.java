@@ -10,7 +10,7 @@ import org.lwjgl.util.vector.Vector3f;
 public class Surface extends GolfObject{
 
     float coefficientFriction;
-    Vector3f[] points;
+    public Vector3f[] points;
     String name;
 
     public Surface(Entity entity, float coefficientFriction, Vector3f[] points, String name){
@@ -37,6 +37,18 @@ public class Surface extends GolfObject{
         if((points[2].x-points[0].x)*as_y-(points[2].z-points[0].z)*as_x > 0 == s_ab) return false;
 
         if((points[2].x-points[1].x)*(obj.getPosition().z-points[1].z)-(points[2].z-points[1].z)*(obj.getPosition().x-points[1].x) > 0 != s_ab) return false;
+
+        return true;
+    }
+    public boolean mouseOver(Vector3f point){
+        float as_x = point.x-points[0].x;
+        float as_y = point.z-points[0].z;
+
+        boolean s_ab = (points[1].x-points[0].x)*as_y-(points[1].z-points[0].z)*as_x > 0;
+
+        if((points[2].x-points[0].x)*as_y-(points[2].z-points[0].z)*as_x > 0 == s_ab) return false;
+
+        if((points[2].x-points[1].x)*(point.z-points[1].z)-(points[2].z-points[1].z)*(point.x-points[1].x) > 0 != s_ab) return false;
 
         return true;
     }

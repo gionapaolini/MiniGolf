@@ -164,7 +164,9 @@ public class PlayerControl {
 
     public void applySurfaceFriction(GolfObject obj, float time,List<Surface> surfaces){
         for(Surface surface: surfaces){
+
             if(surface.ballIsOver(obj)){
+                System.out.println("Friction: "+surface.getCoefficientFriction());
                 Physics.applyFriction(obj,time,surface.getCoefficientFriction());
                 return;
             }
@@ -179,7 +181,7 @@ public class PlayerControl {
             if(ball.isMoving()){
                 if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
                     Physics.applyGravity(ball,time,false);
-                    Physics.applyWind(ball,time,wind,false);
+                  //  Physics.applyWind(ball,time,wind,false);
                     applySurfaceFriction(ball,time,surfaces);
                     Physics.terrainCollision(ball,terrain,time);
                     for(Obstacle obstacle:obstacles){
