@@ -15,7 +15,10 @@ public class Surface extends GolfObject{
     public Surface(Entity entity, float coefficientFriction, Vector3f[] points){
         super(entity);
         this.coefficientFriction = coefficientFriction;
-        this.points = points;
+        this.points = new Vector3f[3];
+        for(int i = 0;i<3;i++) {
+            this.points[i] = new Vector3f(points[i].x, points[i].y, points[i].z);
+        }
     }
 
     public float getCoefficientFriction() {

@@ -50,8 +50,8 @@ public class ControlGui {
     RawModel barModel;
 
     ModelTexture white;
-    ModelTexture black;
-    ModelTexture red, mud;
+    ModelTexture sand,bar,wood;
+    ModelTexture red, mud, box;
     int count;
     Vector3f[] frictionTriangle;
 
@@ -88,6 +88,12 @@ public class ControlGui {
         white = new ModelTexture(loader.loadTexture("white"));
         red = new ModelTexture(loader.loadTexture("red"));
         mud = new ModelTexture(loader.loadTexture("mud"));
+        sand = new ModelTexture(loader.loadTexture("sand"));
+        box = new ModelTexture(loader.loadTexture("box"));
+        wood = new ModelTexture(loader.loadTexture("wood"));
+        bar = new ModelTexture(loader.loadTexture("bar"));
+
+
         this.putHole = putHoles;
         selectMode = false;
         saveButton.select();
@@ -103,31 +109,35 @@ public class ControlGui {
             if (point != null) {
                 currentObj.setPosition(point);
                 isColliding = false;
-                Entity currentEntity;
-                if(currentObj instanceof PutHole)
-                    currentEntity= ((PutHole) currentObj).getFakeHole();
-                else
-                    currentEntity = currentObj.getModel();
-                for (Ball ball: balls) {
-                    if (currentObj != ball && Physics.checkBroadCollision(currentEntity, ball.getModel())) {
-                        isColliding = true;
-                        break;
-                    }
-                }
-                if (!isColliding)
-                    for (Obstacle obstacle : obstacles) {
-                        if (currentObj != obstacle && Physics.checkBroadCollision(currentEntity, obstacle.getModel())) {
+                if(!(currentObj instanceof Surface)) {
+                    Entity currentEntity;
+                    if(currentObj instanceof PutHole)
+                        currentEntity= ((PutHole) currentObj).getFakeHole();
+                    else
+                        currentEntity = currentObj.getModel();
+                    for (Ball ball : balls) {
+                        if (currentObj != ball && Physics.checkBroadCollision(currentEntity, ball.getModel())) {
                             isColliding = true;
                             break;
                         }
                     }
-                if (!isColliding)
-                    if (currentObj != putHole && Physics.checkBroadCollision(currentEntity, putHole.getFakeHole())) {
-                        isColliding = true;
+                    if (!isColliding)
+                        for (Obstacle obstacle : obstacles) {
+                            if (currentObj != obstacle && Physics.checkBroadCollision(currentEntity, obstacle.getModel())) {
+                                isColliding = true;
+                                break;
+                            }
+                        }
+                    if (!isColliding)
+                        if (currentObj != putHole && Physics.checkBroadCollision(currentEntity, putHole.getFakeHole())) {
+                            isColliding = true;
+                        }
+                    if (isColliding) {
+                        currentObj.setCollideColor(red);
+                    } else {
+                        currentObj.unsetCollideColor();
                     }
-                if (isColliding) {
-                    currentObj.setCollideColor(red);
-                } else {
+                }else {
                     currentObj.unsetCollideColor();
                 }
             }
@@ -240,7 +250,7 @@ public class ControlGui {
 
     private void transformCurrentObject(){
         if(currentObj!=null){
-            if(currentObj instanceof Obstacle) {
+            if(currentObj instanceof Obstacle || currentObj instanceof Surface) {
                 if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4)) {
                     currentObj.getModel().setRy(currentObj.getModel().getRy() + 1);
                 }
@@ -252,13 +262,6 @@ public class ControlGui {
                 }
                 if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) {
                     currentObj.getModel().setScale(currentObj.getModel().getScale() - 0.025f);
-                }
-            }
-            if(!(currentObj instanceof PutHole) && !(currentObj instanceof Ball && balls.size()==1)){
-                if(Keyboard.isKeyDown(Keyboard.KEY_DELETE)){
-                    isColliding = true;
-                    executeClick();
-                    checkButtons();
                 }
             }
         }
@@ -449,7 +452,7 @@ public class ControlGui {
         if(cubeModel==null) {
             cubeModel = OBJLoader.loadObjModel("cube", loader);
         }
-        TexturedModel model = new TexturedModel(cubeModel,white);
+        TexturedModel model = new TexturedModel(cubeModel,box);
         Entity n = new Entity(model,new Vector3f(0,0,0),0,0,0,1);
         currentObj = new Obstacle(n);
         obstacles.add((Obstacle)currentObj);
@@ -459,7 +462,7 @@ public class ControlGui {
         if(slopeModel==null) {
             slopeModel = OBJLoader.loadObjModel("slope", loader);
         }
-        TexturedModel model = new TexturedModel(slopeModel,white);
+        TexturedModel model = new TexturedModel(slopeModel,wood);
         Entity n = new Entity(model,new Vector3f(0,0,0),0,0,0,1);
         currentObj = new Obstacle(n);
         obstacles.add((Obstacle)currentObj);
@@ -469,7 +472,7 @@ public class ControlGui {
         if(barModel==null) {
             barModel = OBJLoader.loadObjModel("bar", loader);
         }
-        TexturedModel model = new TexturedModel(barModel,white);
+        TexturedModel model = new TexturedModel(barModel,bar);
         Entity n = new Entity(model,new Vector3f(0,0,0),0,0,0,1);
         currentObj = new Obstacle(n);
         obstacles.add((Obstacle)currentObj);
@@ -514,21 +517,36 @@ public class ControlGui {
                 count++;
                 timeForTriangle = System.currentTimeMillis();
                 if(count==3){
+                    Vector3f p2p1sub = Maths.vector3SUB(frictionTriangle[1],frictionTriangle[0]);
+                    Vector3f p3p1sub = Maths.vector3SUB(frictionTriangle[2],frictionTriangle[0]);
+                    Vector3f normal = Maths.crossProduct(p2p1sub,p3p1sub);
+                    normal.normalise();
+                    if(normal.y<0){
+                        Vector3f temp = frictionTriangle[0];
+                        frictionTriangle[0] = frictionTriangle[2];
+                        frictionTriangle[2] = temp;
+                    }
+                    float centreX =(frictionTriangle[0].x + frictionTriangle[1].x +frictionTriangle[2].x)/3;
+                    float centreZ =(frictionTriangle[0].z + frictionTriangle[1].z +frictionTriangle[2].z)/3;
+
+
                     float[] vertexArray = new float[9];
                     for(int j=0;j<3;j++){
-                        vertexArray[j*3]=frictionTriangle[j].x;
+                        vertexArray[j*3]=frictionTriangle[j].x-centreX;
                         vertexArray[j*3+1]=frictionTriangle[j].y+0.008f;
-                        vertexArray[j*3+2]=frictionTriangle[j].z;
+                        vertexArray[j*3+2]=frictionTriangle[j].z-centreZ;
                     }
                     int[] indices = new int[3];
                     indices[0] = 0;
                     indices[1] = 1;
                     indices[2] = 2;
                     float[] textureArray = new float[3*2];
-                    for(int i=0;i<3;i++){
-                        textureArray[i*2]=0;
-                        textureArray[i*2+1]=0;
-                    }
+                    textureArray[0]=1;
+                    textureArray[1]=0;
+                    textureArray[2]=0;
+                    textureArray[3]=0;
+                    textureArray[4]=0;
+                    textureArray[5]=1;
                     float[] normalArray = new float[3*3];
                     for(int j=0;j<3;j++){
                         normalArray[j*3]=0;
@@ -549,13 +567,13 @@ public class ControlGui {
                     model.setNormalsArray(normalArray);
                     model.setIndicesArray(indices);
                     if(Keyboard.isKeyDown(Keyboard.KEY_X)) {
-                        TexturedModel model1 = new TexturedModel(model, white);
-                        Entity newEnt = new Entity(model1, new Vector3f(0, 0, 0), 0, 0, 0, 1);
-                        surfaces.add(new Surface(newEnt, 8f,frictionTriangle));
-                    }else {
                         TexturedModel model1 = new TexturedModel(model, mud);
-                        Entity newEnt = new Entity(model1, new Vector3f(0, 0, 0), 0, 0, 0, 1);
-                        surfaces.add(new Surface(newEnt, 8f,frictionTriangle));
+                        Entity newEnt = new Entity(model1, new Vector3f(centreX, 0, centreZ), 0, 0, 0, 1);
+                        surfaces.add(new Surface(newEnt,8f,frictionTriangle));
+                    }else if(Keyboard.isKeyDown(Keyboard.KEY_C)){
+                        TexturedModel model1 = new TexturedModel(model, sand);
+                        Entity newEnt1 = new Entity(model1, new Vector3f(centreX, 0, centreZ), 0, 0, 0, 1);
+                        surfaces.add(new Surface(newEnt1,16f,frictionTriangle));
                     }
                     count = 0;
                 }
