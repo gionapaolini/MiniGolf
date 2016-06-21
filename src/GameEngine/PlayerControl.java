@@ -20,7 +20,7 @@ public class PlayerControl {
     List<Player> players;
     Player currentPlayer;
     Camera camera;
-    Entity arrow;
+    Entity arrow, arrow3D;
     public int nPlayer, timeLeft, maxTimeTurn;
     public boolean disabledShot, pause, wait;
     long time;
@@ -28,7 +28,7 @@ public class PlayerControl {
     MousePicker picker;
 
 
-    public PlayerControl(List<Player> players, Camera camera, Entity arrow, int maxTimeTurn, MousePicker picker) {
+    public PlayerControl(List<Player> players, Camera camera, Entity arrow, Entity arrow3D, int maxTimeTurn, MousePicker picker) {
         this.players = players;
         this.camera = camera;
         nPlayer = 0;
@@ -37,13 +37,17 @@ public class PlayerControl {
         disabledShot = true;
         this.maxTimeTurn = maxTimeTurn;
         this.picker = picker;
+        this.arrow3D = arrow3D;
 
     }
 
     private void selectPlayer(){
         camera.setCurrentPlayer(currentPlayer);
-        arrow.setPosition(currentPlayer.getBall().getPosition());
+        Vector3f pos = currentPlayer.getBall().getPosition();
+        arrow.setPosition(new Vector3f(pos.x,pos.y,pos.z));
         arrow.position.y=0.001f;
+        arrow3D.setPosition(new Vector3f(pos.x,pos.y,pos.z));
+        arrow3D.position.y=4;
 
 
     }

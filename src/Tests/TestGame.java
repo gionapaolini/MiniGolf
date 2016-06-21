@@ -81,7 +81,7 @@ public class TestGame {
         obstacles.add(obstacle);
 
         MousePicker picker = new MousePicker();
-        PlayerControl playerControl = new PlayerControl(players,camera, arrow,30,picker);
+        PlayerControl playerControl = new PlayerControl(players,camera, arrow,null,30,picker);
 
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,picker,null);
 

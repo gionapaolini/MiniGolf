@@ -61,7 +61,7 @@ public class TestPhysics{
 
         Obstacle obstacle = new Obstacle(obsta);
         MasterRenderer renderer = new MasterRenderer();
-        PlayerControl playerControl = new PlayerControl(players,camera, arrow,30,null);
+        PlayerControl playerControl = new PlayerControl(players,camera,arrow,null,30,null);
 
         MousePicker picker = new MousePicker(camera,renderer.getProjectionMatrix(), terrain);
         System.out.println(n.getHighestPoint());
