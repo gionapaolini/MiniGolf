@@ -107,6 +107,7 @@ public class GuiControlGame {
             guiGame.getGuis().remove(menu.getGuiTexture());
             playerControl.destroy();
             text.unLoad();
+            pause.deselect();
             settings.setPhase(2);
         }
 

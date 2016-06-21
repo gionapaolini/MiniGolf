@@ -2,10 +2,7 @@ package Tests;
 
 import CourseDesigner.ControlGui;
 import GameEngine.*;
-import GolfObjects.Ball;
-import GolfObjects.Obstacle;
-import GolfObjects.PutHole;
-import GolfObjects.Surface;
+import GolfObjects.*;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
@@ -36,9 +33,12 @@ public class TestMenu {
     public static void main(String[] args){
 
         DisplayManager.createDisplay("CrazyGolf Game");
+
         Loader loader = new Loader();
+
         Light light = new Light(new Vector3f(0,20,0),new Vector3f(1,1,1));
         Camera camera = new Camera();
+
         MasterRenderer masterRenderer = new MasterRenderer();
         Settings settings = new Settings();
         Terrain terrain = new Terrain(-10,-10,20,20,loader,new ModelTexture(loader.loadTexture("grassy2")));
@@ -69,6 +69,8 @@ public class TestMenu {
         GuiGame guiGame = new GuiGame(loader);
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,mousePicker,settings);
 
+        Map map = new Map(terrain,obstacles,balls,surfaces,putHole);
+
         float timePhysics = 0.0084f;
         while (!Display.isCloseRequested()){
 
@@ -76,21 +78,9 @@ public class TestMenu {
                 case 1:
                     camera.moveOnSight();
                     renderer.render(light,camera);
-                    renderer.processTerrain(terrain);
                     guiCourseCreator.render();
                     controlGui.controls();
-                    for(Ball ball: balls){
-
-                        renderer.processEntity(ball.getModel());
-                    }
-                    for(Obstacle obstacle: obstacles){
-                        renderer.processEntity(obstacle.getModel());
-                    }
-                    for(Surface surface: surfaces){
-                        renderer.processEntity(surface.getModel());
-                    }
-                    renderer.processEntity(putHole.getFakeHole());
-
+                    map.renderMap(renderer);
                     break;
                 case 2:
                     renderer.render(light,camera);
@@ -104,18 +94,7 @@ public class TestMenu {
                     playerControl.game(obstacles,terrain,putHole,timePhysics,surfaces);
                     camera.move();
                     renderer.render(light,camera);
-                    renderer.processTerrain(terrain);
-                    for(Ball ball: balls){
-
-                        renderer.processEntity(ball.getModel());
-                    }
-                    for(Obstacle obstacle: obstacles){
-                        renderer.processEntity(obstacle.getModel());
-                    }
-                    for(Surface surface: surfaces){
-                        renderer.processEntity(surface.getModel());
-                    }
-                    renderer.processEntity(putHole.getFakeHole());
+                    map.renderMap(renderer);
                     if(!playerControl.disabledShot){
                         renderer.processEntity(arrow);
                     }
