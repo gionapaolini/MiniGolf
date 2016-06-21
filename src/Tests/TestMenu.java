@@ -10,7 +10,6 @@ import GraphicsEngine.Entities.Terrain;
 import GraphicsEngine.Guis.GuiCourseCreator;
 import GraphicsEngine.Guis.GuiGame;
 import GraphicsEngine.Guis.GuiMenu;
-import GraphicsEngine.Model.RawModel;
 import GraphicsEngine.Model.TexturedModel;
 import GraphicsEngine.RenderEngine.DisplayManager;
 import GraphicsEngine.RenderEngine.Loader;
@@ -19,9 +18,11 @@ import GraphicsEngine.RenderEngine.OBJLoader;
 import GraphicsEngine.Textures.ModelTexture;
 import GraphicsEngine.fontRendering.TextMaster;
 import Toolbox.MousePicker;
+import Toolbox.SaveAndLoad;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ import java.util.List;
  */
 public class TestMenu {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws FileNotFoundException {
 
         DisplayManager.createDisplay("CrazyGolf Game");
 
@@ -62,18 +63,20 @@ public class TestMenu {
         TexturedModel arrow3DModel = new TexturedModel(OBJLoader.loadObjModel("arrow3D", loader),white);
         Entity arrow3D = new Entity(arrow3DModel, new Vector3f(1,0.001f,1), 0,0,0,1);
         List<Surface> surfaces = new ArrayList<Surface>();
+        SaveAndLoad.load(terrain,obstacles,balls,surfaces,putHole,loader,"save",settings);
+
         ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,mousePicker,settings, surfaces);
         PlayerControl playerControl = new PlayerControl(players,camera, arrow, arrow3D,30, mousePicker);
         MenuControl menuControl = new MenuControl(menu,mousePicker,settings,controlGui,players,balls,playerControl);
 
         GuiGame guiGame = new GuiGame(loader);
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,mousePicker,settings);
+        System.out.println("GNAGGNA");
 
         Map map = new Map(terrain,obstacles,balls,surfaces,putHole);
 
         float timePhysics = 0.0084f;
         while (!Display.isCloseRequested()){
-
             switch(settings.getPhase()){
                 case 1:
                     camera.moveOnSight();

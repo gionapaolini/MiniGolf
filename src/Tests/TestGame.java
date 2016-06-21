@@ -19,18 +19,11 @@ import GraphicsEngine.RenderEngine.Loader;
 import GraphicsEngine.RenderEngine.MasterRenderer;
 import GraphicsEngine.RenderEngine.OBJLoader;
 import GraphicsEngine.Textures.ModelTexture;
-import GraphicsEngine.fontMeshCreator.FontType;
-import GraphicsEngine.fontMeshCreator.GUIText;
 import GraphicsEngine.fontRendering.TextMaster;
-import PhysicsEngine.Physics;
 import Toolbox.MousePicker;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +68,9 @@ public class TestGame {
 
         TexturedModel obstacleModel = new TexturedModel(OBJLoader.loadObjModel("slope", loader),white);
         Entity obsta = new Entity(obstacleModel, new Vector3f(-4,0,0),0,0,0,1);
+
         Obstacle obstacle = new Obstacle(obsta,null);
+
 
         List<Obstacle> obstacles = new ArrayList<Obstacle>();
         obstacles.add(obstacle);

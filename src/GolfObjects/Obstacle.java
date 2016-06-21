@@ -11,4 +11,5 @@ public class Obstacle extends GolfObject {
         super(model);
         this.name = name;
     }
+    public String getName(){return name;}
 }

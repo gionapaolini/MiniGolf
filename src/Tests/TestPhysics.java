@@ -60,6 +60,7 @@ public class TestPhysics{
         Entity obsta = new Entity(obstacleModel, new Vector3f(3,0,0), 0,0,0,1);
 
         Obstacle obstacle = new Obstacle(obsta,null);
+
         MasterRenderer renderer = new MasterRenderer();
         PlayerControl playerControl = new PlayerControl(players,camera,arrow,null,30,null);
 
