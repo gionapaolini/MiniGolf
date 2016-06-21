@@ -59,7 +59,7 @@ public class TestPhysics{
         TexturedModel obstacleModel = new TexturedModel(OBJLoader.loadObjModel("slope", loader),white);
         Entity obsta = new Entity(obstacleModel, new Vector3f(3,0,0), 0,0,0,1);
 
-        Obstacle obstacle = new Obstacle(obsta);
+        Obstacle obstacle = new Obstacle(obsta,null);
         MasterRenderer renderer = new MasterRenderer();
         PlayerControl playerControl = new PlayerControl(players,camera,arrow,null,30,null);
 
@@ -72,7 +72,7 @@ public class TestPhysics{
         while (!Display.isCloseRequested()){
             camera.move();
             picker.update();
-            playerControl.moveArrow(arrow,picker.getCurrentTerrainPoint());
+            playerControl.moveArrow(picker.getCurrentTerrainPoint());
             Physics.applyGravity(ball,time, false);
             Physics.applyFriction(ball,time,1.5f);
             if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){

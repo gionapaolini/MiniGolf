@@ -26,6 +26,8 @@ public class PlayerControl {
     long time;
     long timeLeftShot = 0;
     MousePicker picker;
+    long lastShot;
+    Vector3f pointToReach,wind;
 
 
     public PlayerControl(List<Player> players, Camera camera, Entity arrow, Entity arrow3D, int maxTimeTurn, MousePicker picker) {
@@ -38,6 +40,8 @@ public class PlayerControl {
         this.maxTimeTurn = maxTimeTurn;
         this.picker = picker;
         this.arrow3D = arrow3D;
+        wind = new Vector3f(0,0,0);
+        pointToReach = new Vector3f(0,0,0);
 
     }
 
@@ -46,8 +50,6 @@ public class PlayerControl {
         Vector3f pos = currentPlayer.getBall().getPosition();
         arrow.setPosition(new Vector3f(pos.x,pos.y,pos.z));
         arrow.position.y=0.001f;
-        arrow3D.setPosition(new Vector3f(pos.x,pos.y,pos.z));
-        arrow3D.position.y=4;
 
 
     }
@@ -86,13 +88,15 @@ public class PlayerControl {
             diff = Maths.scalarProduct(diff, 5 * distance);
             currentPlayer.getBall().setVelocity(diff);
             disabledShot = true;
+            lastShot = System.currentTimeMillis();
         }
 
     }
 
     public void game(List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time,List<Surface> surfaces){
         if(!pause && System.currentTimeMillis()-this.time>1000) {
-            moveArrow(arrow, picker.getCurrentTerrainPoint());
+            moveArrow(picker.getCurrentTerrainPoint());
+            moveArrowWind();
             decrementTimeLeft();
             shot(picker.getCurrentTerrainPoint());
             nextPlayer();
@@ -100,7 +104,7 @@ public class PlayerControl {
         }
     }
     public void nextPlayer(){
-        if((!isMotion() && disabledShot)||(timeLeft<0)) {
+        if(((!isMotion() || (System.currentTimeMillis()-lastShot>10000 && !players.get((nPlayer+1)%players.size()).getBall().isMoving())) && disabledShot)||(timeLeft<0)) {
             nPlayer += 1;
             nPlayer %= players.size();
             currentPlayer = players.get(nPlayer);
@@ -119,7 +123,34 @@ public class PlayerControl {
         return false;
     }
 
-    public void moveArrow(Entity arrow, Vector3f point){
+    public void moveArrowWind(){
+        double rand = Math.random()*10000;
+        if(rand<50){
+           pointToReach = new Vector3f((float) Math.random()*10-5,0,(float) Math.random()*10-5);
+            System.out.println("Change wind!"+ rand);
+        }
+        if(wind.x<pointToReach.x){
+            wind.x+=0.01;
+        }
+        if(wind.z<pointToReach.z){
+            wind.z+=0.01;
+        }
+        if(wind.x>pointToReach.x){
+            wind.x-=0.01;
+        }
+        if(wind.z>pointToReach.z){
+            wind.z-=0.01;
+        }
+        float angleInDegrees = Maths.GetAngleOfLineBetweenTwoPoints(new Vector3f(0,0,0),wind);
+        arrow3D.setRy(-angleInDegrees);
+        float distance = Maths.distancePoints(new Vector3f(0,0,0),wind);
+        arrow3D.setScaleX(distance/3);
+        Vector3f pos = currentPlayer.getBall().getPosition();
+        arrow3D.setPosition(new Vector3f(pos.x,pos.y+2,pos.z));
+
+    }
+
+    public void moveArrow(Vector3f point){
 
         if(point!=null) {
             float angleInDegrees = Maths.GetAngleOfLineBetweenTwoPoints(arrow.getPosition(),point);
@@ -148,7 +179,7 @@ public class PlayerControl {
             if(ball.isMoving()){
                 if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
                     Physics.applyGravity(ball,time,false);
-
+                    Physics.applyWind(ball,time,wind,false);
                     applySurfaceFriction(ball,time,surfaces);
                     Physics.terrainCollision(ball,terrain,time);
                     for(Obstacle obstacle:obstacles){

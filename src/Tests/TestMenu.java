@@ -118,8 +118,8 @@ public class TestMenu {
                     renderer.processEntity(putHole.getFakeHole());
                     if(!playerControl.disabledShot){
                         renderer.processEntity(arrow);
-                        renderer.processEntity(arrow3D);
                     }
+                    renderer.processEntity(arrow3D);
 
                     guiGame.render();
 

@@ -25,6 +25,12 @@ public class Physics {
 
     }
 
+    public static void applyWind(GolfObject obj, float time, Vector3f wind, boolean onPutHole){
+        Vector3f vel = obj.getVelocity();
+        obj.setVelocity(new Vector3f(vel.x + (wind.x*time),vel.y,vel.z + (wind.z*time)));
+        setNewPosition(obj,time,onPutHole);
+    }
+
     public static void setNewPosition(GolfObject obj, float time, boolean onPutHole){
         Vector3f position = obj.getPosition();
         Vector3f vel = obj.getVelocity();

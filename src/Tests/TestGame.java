@@ -75,7 +75,7 @@ public class TestGame {
 
         TexturedModel obstacleModel = new TexturedModel(OBJLoader.loadObjModel("slope", loader),white);
         Entity obsta = new Entity(obstacleModel, new Vector3f(-4,0,0),0,0,0,1);
-        Obstacle obstacle = new Obstacle(obsta);
+        Obstacle obstacle = new Obstacle(obsta,null);
 
         List<Obstacle> obstacles = new ArrayList<Obstacle>();
         obstacles.add(obstacle);
