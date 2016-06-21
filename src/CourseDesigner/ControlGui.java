@@ -381,11 +381,10 @@ public class ControlGui {
                 }else {
                     obstacles.remove(currentObj);
                 }
-                setAllLimitTerrain();
-            }else {
-                setLimitTerrain(currentObj);
             }
+
             currentObj = null;
+            setAllLimitTerrain();
         }
     }
 

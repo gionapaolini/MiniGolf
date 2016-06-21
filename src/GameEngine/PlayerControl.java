@@ -197,6 +197,7 @@ public class PlayerControl {
                     Physics.setNewPosition(ball,time,true);
                     if(ball.getPosition().y<-1){
                         pause=true;
+
                     }
                 }
 
