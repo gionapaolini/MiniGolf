@@ -454,7 +454,7 @@ public class ControlGui {
         }
         TexturedModel model = new TexturedModel(cubeModel,box);
         Entity n = new Entity(model,new Vector3f(0,0,0),0,0,0,1);
-        currentObj = new Obstacle(n);
+        currentObj = new Obstacle(n,"cube");
         obstacles.add((Obstacle)currentObj);
     }
 
@@ -464,7 +464,7 @@ public class ControlGui {
         }
         TexturedModel model = new TexturedModel(slopeModel,wood);
         Entity n = new Entity(model,new Vector3f(0,0,0),0,0,0,1);
-        currentObj = new Obstacle(n);
+        currentObj = new Obstacle(n,"slope");
         obstacles.add((Obstacle)currentObj);
     }
 
@@ -474,7 +474,7 @@ public class ControlGui {
         }
         TexturedModel model = new TexturedModel(barModel,bar);
         Entity n = new Entity(model,new Vector3f(0,0,0),0,0,0,1);
-        currentObj = new Obstacle(n);
+        currentObj = new Obstacle(n,"bar");
         obstacles.add((Obstacle)currentObj);
     }
 
