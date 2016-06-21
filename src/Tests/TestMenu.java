@@ -13,7 +13,6 @@ import GraphicsEngine.Entities.Terrain;
 import GraphicsEngine.Guis.GuiCourseCreator;
 import GraphicsEngine.Guis.GuiGame;
 import GraphicsEngine.Guis.GuiMenu;
-import GraphicsEngine.Model.RawModel;
 import GraphicsEngine.Model.TexturedModel;
 import GraphicsEngine.RenderEngine.DisplayManager;
 import GraphicsEngine.RenderEngine.Loader;
@@ -25,6 +24,7 @@ import Toolbox.MousePicker;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class TestMenu {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws FileNotFoundException {
 
         DisplayManager.createDisplay("CrazyGolf Game");
         Loader loader = new Loader();

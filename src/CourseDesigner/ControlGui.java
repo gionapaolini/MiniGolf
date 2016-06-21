@@ -14,7 +14,7 @@ import GraphicsEngine.Textures.ModelTexture;
 import PhysicsEngine.Physics;
 import Toolbox.Maths;
 import Toolbox.MousePicker;
-import org.lwjgl.Sys;
+import Toolbox.SaveAndLoad;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Matrix4f;
@@ -22,6 +22,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ public class ControlGui {
     PutHole putHole;
     Terrain terrain;
     MousePicker picker;
+    RawModel model;
 
     GuiButton ballButton, cubeButton, slopeButton, barButton, selectButton, saveButton, playButton, closeButton;
 
@@ -145,7 +147,7 @@ public class ControlGui {
 
     }
 
-    public void controls(){
+    public void controls() throws FileNotFoundException {
         selectMode();
         checkButtonClicks();
         moveCurrentObj();
@@ -271,7 +273,7 @@ public class ControlGui {
 
 
 
-    public void checkButtonClicks(){
+    public void checkButtonClicks() throws FileNotFoundException {
 
         long current_time = System.currentTimeMillis();
 
@@ -329,13 +331,7 @@ public class ControlGui {
                     slopeButton.deselect();
                     checkButtons();
                 }else if ((mouseC.x >= 0.601) && (mouseC.x <= 0.9) && (mouseC.y <= 0.894) && (mouseC.y >= 0.783)) {
-                    saveButton.swap();
-                    ballButton.deselect();
-                    cubeButton.deselect();
-                    slopeButton.deselect();
-                    barButton.deselect();
-
-                    selectButton.deselect();
+                    SaveAndLoad.save(terrain, obstacles, balls, surfaces, putHole, model);
                 }else{
 
                     ballButton.deselect();
@@ -561,7 +557,7 @@ public class ControlGui {
 
 
 
-                    RawModel model = loader.loadToVAO(vertexArray,textureArray,normalArray,indices);
+                    model = loader.loadToVAO(vertexArray,textureArray,normalArray,indices);
 
                     model.setVerticesArray(vertexArray);
                     model.setNormalsArray(normalArray);
@@ -569,11 +565,11 @@ public class ControlGui {
                     if(Keyboard.isKeyDown(Keyboard.KEY_X)) {
                         TexturedModel model1 = new TexturedModel(model, mud);
                         Entity newEnt = new Entity(model1, new Vector3f(centreX, 0, centreZ), 0, 0, 0, 1);
-                        surfaces.add(new Surface(newEnt,8f,frictionTriangle));
+                        surfaces.add(new Surface(newEnt,8f,frictionTriangle, "mud"));
                     }else if(Keyboard.isKeyDown(Keyboard.KEY_C)){
                         TexturedModel model1 = new TexturedModel(model, sand);
                         Entity newEnt1 = new Entity(model1, new Vector3f(centreX, 0, centreZ), 0, 0, 0, 1);
-                        surfaces.add(new Surface(newEnt1,16f,frictionTriangle));
+                        surfaces.add(new Surface(newEnt1,16f,frictionTriangle, "sand"));
                     }
                     count = 0;
                 }

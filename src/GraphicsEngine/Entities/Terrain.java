@@ -38,6 +38,13 @@ public class Terrain {
         z = -height/2;
         model = generateTerrain(loader);
     }
+    public void changeSize(float gridX, float gridZ, float width, float height, Loader loader){
+        this.width = width;
+        this.height = height;
+        x = gridX;
+        z = gridZ;
+        model = generateTerrain(loader);
+    }
 
     private RawModel generateTerrain(Loader loader){
         int count = VERTEX_COUNT * VERTEX_COUNT;
@@ -106,6 +113,14 @@ public class Terrain {
 
     public float getZ() {
         return z;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
     }
 
     public RawModel getModel() {

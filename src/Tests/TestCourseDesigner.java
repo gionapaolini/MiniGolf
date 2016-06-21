@@ -20,6 +20,7 @@ import org.lwjgl.opengl.Display;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import java.util.List;
  */
 public class TestCourseDesigner {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws FileNotFoundException {
 
         DisplayManager.createDisplay("CrazyGolf Game");
 
