@@ -5,6 +5,7 @@ import GameEngine.*;
 import GolfObjects.Ball;
 import GolfObjects.Obstacle;
 import GolfObjects.PutHole;
+import GolfObjects.Surface;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Light;
@@ -58,8 +59,11 @@ public class TestMenu {
         List<Player> players = new ArrayList<Player>();
         TexturedModel arrowModel = new TexturedModel(OBJLoader.loadObjModel("arrow", loader),white);
         Entity arrow = new Entity(arrowModel, new Vector3f(1,0.001f,1), 0,0,0,1);
-        ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,mousePicker,settings);
-        PlayerControl playerControl = new PlayerControl(players,camera, arrow,30, mousePicker);
+        TexturedModel arrow3DModel = new TexturedModel(OBJLoader.loadObjModel("arrow3D", loader),white);
+        Entity arrow3D = new Entity(arrow3DModel, new Vector3f(1,0.001f,1), 0,0,0,1);
+        List<Surface> surfaces = new ArrayList<Surface>();
+        ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,mousePicker,settings, surfaces);
+        PlayerControl playerControl = new PlayerControl(players,camera, arrow, arrow3D,30, mousePicker);
         MenuControl menuControl = new MenuControl(menu,mousePicker,settings,controlGui,players,balls,playerControl);
 
         GuiGame guiGame = new GuiGame(loader);
@@ -82,6 +86,9 @@ public class TestMenu {
                     for(Obstacle obstacle: obstacles){
                         renderer.processEntity(obstacle.getModel());
                     }
+                    for(Surface surface: surfaces){
+                        renderer.processEntity(surface.getModel());
+                    }
                     renderer.processEntity(putHole.getFakeHole());
 
                     break;
@@ -94,7 +101,7 @@ public class TestMenu {
                 case 3:
                     mousePicker.update();
                     guiControlGame.checkButtonsClick();
-                    playerControl.game(obstacles,terrain,putHole,timePhysics);
+                    playerControl.game(obstacles,terrain,putHole,timePhysics,surfaces);
                     camera.move();
                     renderer.render(light,camera);
                     renderer.processTerrain(terrain);
@@ -105,9 +112,14 @@ public class TestMenu {
                     for(Obstacle obstacle: obstacles){
                         renderer.processEntity(obstacle.getModel());
                     }
+                    for(Surface surface: surfaces){
+                        renderer.processEntity(surface.getModel());
+                    }
                     renderer.processEntity(putHole.getFakeHole());
-                    if(!playerControl.disabledShot)
+                    if(!playerControl.disabledShot){
                         renderer.processEntity(arrow);
+                        renderer.processEntity(arrow3D);
+                    }
 
                     guiGame.render();
 

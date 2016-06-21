@@ -64,10 +64,10 @@ public class Physics {
 
     }
 
-    public static void applyFriction(GolfObject obj, float time){
+    public static void applyFriction(GolfObject obj, float time,float coefficient){
 
         if(!obj.isFlying()) {
-            float u = 1.5f * time;
+            float u = coefficient * time;
             Vector3f vel = obj.getVelocity();
             Vector3f newVel = new Vector3f(vel.x - (vel.x * u), vel.y - (vel.y * u), vel.z - (vel.z * u));
             if (Math.abs(newVel.x) < 0.2 && Math.abs(newVel.z) < 0.2 && obj.getPosition().y <= 0 && Math.abs(newVel.y) < 0.2) {
@@ -81,6 +81,30 @@ public class Physics {
 
     }
 
+    public static void collisionBall(Ball ball, Ball ball1, float time){
+        if(Maths.distancePoints(ball.getPosition(),ball1.getPosition())<=2*0.35578898){
+
+            float newVelX1 = ball1.getVelocity().x;
+            float newVelY1 = ball1.getVelocity().y;
+            float newVelZ1 = ball1.getVelocity().z;
+            float newVelX2 = ball.getVelocity().x;
+            float newVelY2 = ball.getVelocity().y;
+            float newVelZ2 = ball.getVelocity().z;
+
+            ball.setVelocity(new Vector3f(newVelX1,newVelY1,newVelZ1));
+            ball1.setVelocity(new Vector3f(newVelX2,newVelY2,newVelZ2));
+            setNewPosition(ball,time,false);
+            setNewPosition(ball1,time,false);
+
+
+        }
+
+
+
+
+
+    }
+
 
     public static void applyCollisionBall(GolfObject obj, GolfObject obj2, Vector3f normals, float time){
         Vector3f vel1 = obj.getVelocity();
@@ -91,6 +115,8 @@ public class Physics {
         Vector3f I = Maths.scalarProduct(normals,(1+obj.getCor()*dot/(1/obj.getMass() + 1/obj2.getMass())));
         obj.setVelocity(Maths.vector3SUB(vel1,Maths.scalarProduct(I,1/obj.getMass())));
         obj2.setVelocity(Maths.vector3SUM(vel2,Maths.scalarProduct(I,1/obj.getMass())));
+        setNewPosition(obj,time,false);
+        setNewPosition(obj2,time,false);
     }
 
     public static boolean checkBroadCollision(Entity en1, Entity en2){
@@ -205,7 +231,8 @@ public class Physics {
         if(collision){
             Vector3f vel = obj1.getVelocity();
             Vector3f normalVel = new Vector3f(vel.x,vel.y,vel.z);
-            normalVel.normalise();
+            if(normalVel.x != 0 || normalVel.y !=0 || normalVel.z !=0)
+                normalVel.normalise();
             TrianglePlane[] trianglePlanes = obj2.getModel().getTriangles();
 
             float closer = 1000;

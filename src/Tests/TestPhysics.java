@@ -61,7 +61,7 @@ public class TestPhysics{
 
         Obstacle obstacle = new Obstacle(obsta);
         MasterRenderer renderer = new MasterRenderer();
-        PlayerControl playerControl = new PlayerControl(players,camera, arrow,30,null);
+        PlayerControl playerControl = new PlayerControl(players,camera,arrow,null,30,null);
 
         MousePicker picker = new MousePicker(camera,renderer.getProjectionMatrix(), terrain);
         System.out.println(n.getHighestPoint());
@@ -74,7 +74,7 @@ public class TestPhysics{
             picker.update();
             playerControl.moveArrow(arrow,picker.getCurrentTerrainPoint());
             Physics.applyGravity(ball,time, false);
-            Physics.applyFriction(ball,time);
+            Physics.applyFriction(ball,time,1.5f);
             if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
                 playerControl.nextPlayer();
             }

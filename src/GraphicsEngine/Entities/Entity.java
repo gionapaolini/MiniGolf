@@ -49,7 +49,6 @@ public class Entity {
         float maxX = -100;
         float minZ = 100;
         float maxZ = -100;
-
         for(int i=0;i<vertexArray.length/3;i++){
             if(vertexArray[i*3]<minX)
                 minX = vertexArray[i*3];

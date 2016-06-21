@@ -54,7 +54,7 @@ public class TestCourseDesigner {
         List<Obstacle> obstacles = new ArrayList<Obstacle>();
 
 
-        ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,picker,null);
+        ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,picker,null, null);
 
 
         while (!Display.isCloseRequested()){

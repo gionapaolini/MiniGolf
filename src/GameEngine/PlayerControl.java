@@ -1,7 +1,5 @@
 package GameEngine;
-import GolfObjects.Ball;
-import GolfObjects.Obstacle;
-import GolfObjects.PutHole;
+import GolfObjects.*;
 import GraphicsEngine.Entities.Camera;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Terrain;
@@ -10,6 +8,8 @@ import Toolbox.Maths;
 import Toolbox.MousePicker;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,7 +20,7 @@ public class PlayerControl {
     List<Player> players;
     Player currentPlayer;
     Camera camera;
-    Entity arrow;
+    Entity arrow, arrow3D;
     public int nPlayer, timeLeft, maxTimeTurn;
     public boolean disabledShot, pause, wait;
     long time;
@@ -28,22 +28,26 @@ public class PlayerControl {
     MousePicker picker;
 
 
-    public PlayerControl(List<Player> players, Camera camera, Entity arrow, int maxTimeTurn, MousePicker picker) {
+    public PlayerControl(List<Player> players, Camera camera, Entity arrow, Entity arrow3D, int maxTimeTurn, MousePicker picker) {
         this.players = players;
         this.camera = camera;
         nPlayer = 0;
         this.arrow = arrow;
-        arrow.position.y=0.001f;
+        arrow.position.y=0.1f;
         disabledShot = true;
         this.maxTimeTurn = maxTimeTurn;
         this.picker = picker;
+        this.arrow3D = arrow3D;
 
     }
 
     private void selectPlayer(){
         camera.setCurrentPlayer(currentPlayer);
-        arrow.setPosition(currentPlayer.getBall().getPosition());
+        Vector3f pos = currentPlayer.getBall().getPosition();
+        arrow.setPosition(new Vector3f(pos.x,pos.y,pos.z));
         arrow.position.y=0.001f;
+        arrow3D.setPosition(new Vector3f(pos.x,pos.y,pos.z));
+        arrow3D.position.y=4;
 
 
     }
@@ -86,17 +90,17 @@ public class PlayerControl {
 
     }
 
-    public void game(List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time){
+    public void game(List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time,List<Surface> surfaces){
         if(!pause && System.currentTimeMillis()-this.time>1000) {
             moveArrow(arrow, picker.getCurrentTerrainPoint());
             decrementTimeLeft();
             shot(picker.getCurrentTerrainPoint());
             nextPlayer();
-            applyPhysics(obstacles,terrain,putHole,time);
+            applyPhysics(obstacles,terrain,putHole,time,surfaces);
         }
     }
     public void nextPlayer(){
-        if((!currentPlayer.getBall().isMoving() && disabledShot)||(timeLeft<0)) {
+        if((!isMotion() && disabledShot)||(timeLeft<0)) {
             nPlayer += 1;
             nPlayer %= players.size();
             currentPlayer = players.get(nPlayer);
@@ -104,6 +108,15 @@ public class PlayerControl {
             disabledShot = false;
             timeLeft = maxTimeTurn;
         }
+    }
+
+    public boolean isMotion(){
+        for(Player player: players){
+            if(player.getBall().isMoving()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void moveArrow(Entity arrow, Vector3f point){
@@ -118,16 +131,33 @@ public class PlayerControl {
         }
     }
 
-    public void applyPhysics(List<Obstacle> obstacles,Terrain terrain,PutHole putHole,float time){
+    public void applySurfaceFriction(GolfObject obj, float time,List<Surface> surfaces){
+        for(Surface surface: surfaces){
+            if(surface.ballIsOver(obj)){
+                Physics.applyFriction(obj,time,surface.getCoefficientFriction());
+                return;
+            }
+        }
+        Physics.applyFriction(obj,time,1.5f);
+
+    }
+
+    public void applyPhysics(List<Obstacle> obstacles,Terrain terrain,PutHole putHole,float time,List<Surface> surfaces){
         for(Player player: players){
             Ball ball = player.getBall();
             if(ball.isMoving()){
                 if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
                     Physics.applyGravity(ball,time,false);
-                    Physics.applyFriction(ball,time);
+
+                    applySurfaceFriction(ball,time,surfaces);
                     Physics.terrainCollision(ball,terrain,time);
                     for(Obstacle obstacle:obstacles){
                         Physics.collision(ball,obstacle,time);
+                    }
+                    for(Player player2: players){
+                        if(player2 != player){
+                            Physics.collisionBall(player.getBall(),player2.getBall(),time);
+                        }
                     }
                     Physics.setNewPosition(ball,time,false);
                 }else {
