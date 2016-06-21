@@ -80,7 +80,13 @@ public class PlayerControl {
     }
 
     public void shot(Vector3f point){
-        if(point!= null && !disabledShot && Mouse.isButtonDown(0) && !wait) {
+        if(currentPlayer instanceof Bot && !disabledShot){
+             Vector3f diff = currentPlayer.shot();
+            diff.normalise();
+            diff = Maths.scalarProduct(diff,10);
+            currentPlayer.getBall().setVelocity(diff);
+            disabledShot=true;
+        }else  if(point!= null && !disabledShot && Mouse.isButtonDown(0) && !wait) {
             Vector3f diff = Maths.vector3SUB(point, currentPlayer.getBall().getPosition());
             float distance = Maths.distancePoints(arrow.getPosition(), point);
             distance = Math.min(distance, 4);
@@ -181,7 +187,7 @@ public class PlayerControl {
             if(ball.isMoving()){
                 if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
                     Physics.applyGravity(ball,time,false);
-                  //  Physics.applyWind(ball,time,wind,false);
+                    Physics.applyWind(ball,time,wind,false);
                     applySurfaceFriction(ball,time,surfaces);
                     Physics.terrainCollision(ball,terrain,time);
                     for(Obstacle obstacle:obstacles){

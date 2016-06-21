@@ -1,5 +1,7 @@
 package GameEngine;
 
+import GolfObjects.PutHole;
+
 /**
  * Created by giogio on 19/06/16.
  */
@@ -8,16 +10,18 @@ public class Settings {
     int nBot;
     int lvlBot;
     int round;
-
     int phase;
+    int level;
+    PutHole putHole;
 
-    public Settings(){
+    public Settings(PutHole putHole){
          nHuman = 1;
          nBot = 0;
          lvlBot = 0;
          round =30;
-
+         level = 1;
          phase = 2;
+        this.putHole = putHole;
     }
 
     public int getnHuman() {
@@ -58,5 +62,15 @@ public class Settings {
 
     public void setPhase(int phase) {
         this.phase = phase;
+    }
+    public void setLevel(int level) {
+        this.level = level;
+    }
+    public int getLevel() {
+        return level;
+    }
+
+    public PutHole getPutHole() {
+        return putHole;
     }
 }

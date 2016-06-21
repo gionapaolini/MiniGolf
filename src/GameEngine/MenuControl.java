@@ -2,6 +2,7 @@ package GameEngine;
 
 import CourseDesigner.ControlGui;
 import GolfObjects.Ball;
+import GolfObjects.PutHole;
 import GraphicsEngine.Guis.*;
 import GraphicsEngine.fontMeshCreator.FontType;
 import GraphicsEngine.fontMeshCreator.GUIText;
@@ -270,7 +271,7 @@ public class MenuControl {
                 players.add(new Human(balls.get(i)));
             }
             for(int i =n;i<n1;i++){
-                players.add(new Bot(balls.get(i)));
+                players.add(new Bot(balls.get(i),setting.putHole,setting.level));
             }
             control.initialize(setting.getRound());
             setting.setPhase(3);

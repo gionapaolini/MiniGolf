@@ -83,7 +83,7 @@ public class TestPhysics{
                 playerControl.shot(picker.getCurrentTerrainPoint());
             }
             if(ball.getPosition().y<=0){
-                Physics.applyCollision(ball, normal, time);
+                Physics.applyCollision(ball, normal);
 
             }
             Physics.collision(ball,obstacle,time);

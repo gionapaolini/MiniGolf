@@ -41,7 +41,6 @@ public class TestMenu {
         Camera camera = new Camera();
 
         MasterRenderer masterRenderer = new MasterRenderer();
-        Settings settings = new Settings();
         Terrain terrain = new Terrain(-10,-10,20,20,loader,new ModelTexture(loader.loadTexture("grassy2")));
         GuiCourseCreator guiCourseCreator = new GuiCourseCreator(loader);
         TextMaster.init(loader);
@@ -63,7 +62,8 @@ public class TestMenu {
         TexturedModel arrow3DModel = new TexturedModel(OBJLoader.loadObjModel("arrow3D", loader),white);
         Entity arrow3D = new Entity(arrow3DModel, new Vector3f(1,0.001f,1), 0,0,0,1);
         List<Surface> surfaces = new ArrayList<Surface>();
-        SaveAndLoad.load(terrain,obstacles,balls,surfaces,putHole,loader,"save",settings);
+        Settings settings = new Settings(putHole);
+        SaveAndLoad.load(terrain,obstacles,balls,surfaces,putHole,loader,"save1",settings);
 
         ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,mousePicker,settings, surfaces);
         PlayerControl playerControl = new PlayerControl(players,camera, arrow, arrow3D,30, mousePicker);
@@ -71,7 +71,7 @@ public class TestMenu {
 
         GuiGame guiGame = new GuiGame(loader);
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,mousePicker,settings);
-        System.out.println("GNAGGNA");
+
 
         Map map = new Map(terrain,obstacles,balls,surfaces,putHole);
 

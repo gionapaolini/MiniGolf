@@ -61,7 +61,7 @@ public class Physics {
 
     }
 
-    public static void applyCollision(GolfObject obj, Vector3f normals, float time){
+    public static void applyCollision(GolfObject obj, Vector3f normals){
         Vector3f vel = obj.getVelocity();
         float dot = Maths.dot(vel,normals);
         Vector3f normalProc = Maths.scalarProduct(Maths.scalarProduct(normals,(1+obj.getCor())), dot);
@@ -206,24 +206,24 @@ public class Physics {
             Vector3f normalVel = new Vector3f(vel.x, vel.y, vel.z);
             normalVel.normalise();
             if (obj.getPosition().x - 0.35578898 <= l1 && Vector3f.dot(normalVel, new Vector3f(-1, 0, 0)) > 0) {
-                applyCollision(obj, new Vector3f(-1, 0, 0), time);
+                applyCollision(obj, new Vector3f(-1, 0, 0));
                 setNewPosition(obj, time, terrain);
             }
             if (obj.getPosition().x + 0.35578898 >= l3 && Vector3f.dot(normalVel, new Vector3f(1, 0, 0)) > 0) {
-                applyCollision(obj, new Vector3f(1, 0, 0), time);
+                applyCollision(obj, new Vector3f(1, 0, 0));
                 setNewPosition(obj, time, terrain);
             }
             if (obj.getPosition().z - 0.35578898 <= l2 && Vector3f.dot(normalVel, new Vector3f(0, 0, -1)) > 0) {
-                applyCollision(obj, new Vector3f(0, 0, -1), time);
+                applyCollision(obj, new Vector3f(0, 0, -1));
                 setNewPosition(obj, time, terrain);
             }
             if (obj.getPosition().z + 0.35578898 >= l4 && Vector3f.dot(normalVel, new Vector3f(0, 0, 1)) > 0) {
-                applyCollision(obj, new Vector3f(0, 0, 1), time);
+                applyCollision(obj, new Vector3f(0, 0, 1));
                 setNewPosition(obj, time, terrain);
             }
 
             if (obj.getPosition().y <= 0) {
-                applyCollision(obj, new Vector3f(0, 1, 0), time);
+                applyCollision(obj, new Vector3f(0, 1, 0));
             }
         }
 
@@ -257,7 +257,7 @@ public class Physics {
 
             if(normal!=null) {
                 obj1.setColliding(true);
-                applyCollision(obj1, normal, time);
+                applyCollision(obj1, normal);
             }
         }
 
