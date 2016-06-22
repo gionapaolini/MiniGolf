@@ -237,7 +237,7 @@ public class Physics {
 
     }
 
-    public static void collision(GolfObject obj1, GolfObject obj2){
+    public static void collision(GolfObject obj1, GolfObject obj2, boolean onPutHole){
         obj1.setColliding(false);
         boolean collision = checkBroadCollision(obj1.getModel(),obj2.getModel());
         if(collision){
@@ -264,6 +264,7 @@ public class Physics {
             if(normal!=null) {
                 obj1.setColliding(true);
                 applyCollision(obj1, normal);
+                setNewPosition(obj1,onPutHole);
             }
         }
 

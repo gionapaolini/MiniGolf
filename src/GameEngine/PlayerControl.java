@@ -185,7 +185,7 @@ public class PlayerControl {
                     applySurfaceFriction(ball,surfaces);
                     Physics.terrainCollision(ball,terrain);
                     for(Obstacle obstacle:obstacles){
-                        Physics.collision(ball,obstacle);
+                        Physics.collision(ball,obstacle,false);
                     }
                     for(Player player2: players){
                         if(player2 != player){
@@ -195,7 +195,7 @@ public class PlayerControl {
                     Physics.setNewPosition(ball,false);
                 }else {
                     Physics.applyGravity(ball,true);
-                    Physics.collision(ball,putHole);
+                    Physics.collision(ball,putHole,true);
                     Physics.setNewPosition(ball,true);
                     if(ball.getPosition().y<-1){
                         pause=true;
