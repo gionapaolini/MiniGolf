@@ -93,7 +93,7 @@ public class Physics {
     }
 
     public static void collisionBall(Ball ball, Ball ball1){
-        if(Maths.distancePoints(ball.getPosition(),ball1.getPosition())<=2*0.35578898){
+        if(Maths.distancePoints(ball.getPosition(),ball1.getPosition())<=0.35578898){
 
             float newVelX1 = ball1.getVelocity().x;
             float newVelY1 = ball1.getVelocity().y;
