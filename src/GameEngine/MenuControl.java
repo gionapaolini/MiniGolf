@@ -270,7 +270,7 @@ public class MenuControl {
             for(int i =0;i<n;i++){
                 players.add(new Human(balls.get(i)));
             }
-            for(int i =n;i<n1;i++){
+            for(int i =n;i<n+n1;i++){
                 players.add(new Bot(balls.get(i),setting.putHole,setting.level));
             }
             control.initialize(setting.getRound());
