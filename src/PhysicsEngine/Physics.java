@@ -88,6 +88,7 @@ public class Physics {
             }
 
             obj.setVelocity(newVel);
+            setNewPosition(obj,false);
         }
 
     }
