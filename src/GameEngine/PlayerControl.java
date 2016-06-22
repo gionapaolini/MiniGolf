@@ -28,9 +28,10 @@ public class PlayerControl {
     MousePicker picker;
     long lastShot;
     Vector3f pointToReach,wind;
+    Simulator simulator;
 
 
-    public PlayerControl(List<Player> players, Camera camera, Entity arrow, Entity arrow3D, int maxTimeTurn, MousePicker picker) {
+    public PlayerControl(List<Player> players, Camera camera, Entity arrow, Entity arrow3D, int maxTimeTurn, MousePicker picker, Simulator simulator) {
         this.players = players;
         this.camera = camera;
         nPlayer = 0;
@@ -42,6 +43,7 @@ public class PlayerControl {
         this.arrow3D = arrow3D;
         wind = new Vector3f(0,0,0);
         pointToReach = new Vector3f(0,0,0);
+        this.simulator=simulator;
 
     }
 
@@ -86,21 +88,23 @@ public class PlayerControl {
             distance = Math.min(distance, 4);
             diff.normalise();
             diff = Maths.scalarProduct(diff, 5 * distance);
+            simulator.simulate(currentPlayer.getBall().getPosition(),diff);
             currentPlayer.getBall().setVelocity(diff);
+
             disabledShot = true;
             lastShot = System.currentTimeMillis();
         }
 
     }
 
-    public void game(List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time,List<Surface> surfaces){
+    public void game(List<Obstacle> obstacles, Terrain terrain, PutHole putHole,List<Surface> surfaces){
         if(!pause && System.currentTimeMillis()-this.time>1000) {
             moveArrow(picker.getCurrentTerrainPoint());
             moveArrowWind();
             decrementTimeLeft();
             shot(picker.getCurrentTerrainPoint());
             nextPlayer();
-            applyPhysics(obstacles,terrain,putHole,time,surfaces);
+            applyPhysics(obstacles,terrain,putHole,surfaces);
         }
     }
     public void nextPlayer(){
@@ -162,37 +166,27 @@ public class PlayerControl {
         }
     }
 
-    public void applySurfaceFriction(GolfObject obj,List<Surface> surfaces){
-        for(Surface surface: surfaces){
 
-            if(surface.ballIsOver(obj)){
-                System.out.println("Friction: "+surface.getCoefficientFriction());
-                Physics.applyFriction(obj,surface.getCoefficientFriction());
-                return;
-            }
-        }
-        Physics.applyFriction(obj,1.5f);
 
-    }
-
-    public void applyPhysics(List<Obstacle> obstacles,Terrain terrain,PutHole putHole,float time,List<Surface> surfaces){
+    public void applyPhysics(List<Obstacle> obstacles,Terrain terrain,PutHole putHole,List<Surface> surfaces){
         for(Player player: players){
             Ball ball = player.getBall();
             if(ball.isMoving()){
                 if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
                     Physics.applyGravity(ball,false);
                   //  Physics.applyWind(ball,time,wind,false);
-                    applySurfaceFriction(ball,surfaces);
+                    Physics.applySurfaceFriction(ball,surfaces);
                     Physics.terrainCollision(ball,terrain);
                     for(Obstacle obstacle:obstacles){
                         Physics.collision(ball,obstacle,false);
                     }
+                    /*
                     for(Player player2: players){
                         if(player2 != player){
                             Physics.collisionBall(player.getBall(),player2.getBall());
                         }
                     }
-                    Physics.setNewPosition(ball,false);
+                    */
                 }else {
                     Physics.applyGravity(ball,true);
                     Physics.collision(ball,putHole,true);

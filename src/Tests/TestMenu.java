@@ -64,19 +64,17 @@ public class TestMenu {
         Entity arrow3D = new Entity(arrow3DModel, new Vector3f(1,0.001f,1), 0,0,0,1);
         List<Surface> surfaces = new ArrayList<Surface>();
         SaveAndLoad.load(terrain,obstacles,balls,surfaces,putHole,loader,"save",settings);
-
+        Map map = new Map(terrain,obstacles,balls,surfaces,putHole);
+        Simulator simulator = new Simulator(map);
         ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,mousePicker,settings, surfaces);
-        PlayerControl playerControl = new PlayerControl(players,camera, arrow, arrow3D,30, mousePicker);
+        PlayerControl playerControl = new PlayerControl(players,camera, arrow, arrow3D,30, mousePicker,simulator);
         MenuControl menuControl = new MenuControl(menu,mousePicker,settings,controlGui,players,balls,playerControl);
 
         GuiGame guiGame = new GuiGame(loader);
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,mousePicker,settings);
 
-        Map map = new Map(terrain,obstacles,balls,surfaces,putHole);
 
-        float timePhysics = 0.0084f;
         while (!Display.isCloseRequested()){
-            System.out.println(DisplayManager.getFrameTimeSeconds());
             switch(settings.getPhase()){
                 case 1:
                     camera.moveOnSight();
@@ -94,7 +92,7 @@ public class TestMenu {
                 case 3:
                     mousePicker.update();
                     guiControlGame.checkButtonsClick();
-                    playerControl.game(obstacles,terrain,putHole,timePhysics,surfaces);
+                    playerControl.game(obstacles,terrain,putHole,surfaces);
                     camera.move();
                     renderer.render(light,camera);
                     map.renderMap(renderer);
