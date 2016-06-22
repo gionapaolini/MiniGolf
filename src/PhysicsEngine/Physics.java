@@ -4,6 +4,7 @@ import GolfObjects.Ball;
 import GolfObjects.GolfObject;
 import GraphicsEngine.Entities.Entity;
 import GraphicsEngine.Entities.Terrain;
+import GraphicsEngine.RenderEngine.DisplayManager;
 import Toolbox.Maths;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -15,23 +16,27 @@ import java.util.Random;
  */
 public class Physics {
 
-    public static void applyGravity(GolfObject obj, float time, boolean onPutHole){
+    public static void applyGravity(GolfObject obj, boolean onPutHole){
+        float time = DisplayManager.getFrameTimeSeconds();
+
         Vector3f pos = obj.getPosition();
         if(pos.y > 0 || onPutHole) {
             Vector3f vel = obj.getVelocity();
             obj.setVelocity(new Vector3f(vel.x, (float) (vel.y - (9.8 * time)), vel.z));
-            setNewPosition(obj,time,onPutHole);
+            setNewPosition(obj,onPutHole);
         }
 
     }
 
-    public static void applyWind(GolfObject obj, float time, Vector3f wind, boolean onPutHole){
+    public static void applyWind(GolfObject obj, Vector3f wind, boolean onPutHole){
+        float time = DisplayManager.getFrameTimeSeconds();
         Vector3f vel = obj.getVelocity();
         obj.setVelocity(new Vector3f(vel.x + (wind.x*time),vel.y,vel.z + (wind.z*time)));
-        setNewPosition(obj,time,onPutHole);
+        setNewPosition(obj,onPutHole);
     }
 
-    public static void setNewPosition(GolfObject obj, float time, boolean onPutHole){
+    public static void setNewPosition(GolfObject obj,boolean onPutHole){
+        float time = DisplayManager.getFrameTimeSeconds();
         Vector3f position = obj.getPosition();
         Vector3f vel = obj.getVelocity();
         float y;
@@ -42,7 +47,9 @@ public class Physics {
         obj.setPosition(new Vector3f((position.x+(vel.x*time)),y,(position.z+(vel.z*time))));
     }
 
-    public static void setNewPosition(GolfObject obj, float time, Terrain terrain){
+    public static void setNewPosition(GolfObject obj,Terrain terrain){
+        float time = DisplayManager.getFrameTimeSeconds();
+
         Vector3f position = obj.getPosition();
         Vector3f vel = obj.getVelocity();
         Vector3f newPos = new Vector3f((position.x+(vel.x*time)),Math.max(position.y+(vel.y*time),0),(position.z+(vel.z*time)));
@@ -55,13 +62,12 @@ public class Physics {
 
         if(!(newPos.x-0.35578898<=l1 || newPos.x+0.35578898>=l3 || newPos.z-0.35578898<=l2 || newPos.z+0.35578898>=l4)){
             obj.setPosition(newPos);
-            System.out.println(newPos);
         }
 
 
     }
 
-    public static void applyCollision(GolfObject obj, Vector3f normals, float time){
+    public static void applyCollision(GolfObject obj, Vector3f normals){
         Vector3f vel = obj.getVelocity();
         float dot = Maths.dot(vel,normals);
         Vector3f normalProc = Maths.scalarProduct(Maths.scalarProduct(normals,(1+obj.getCor())), dot);
@@ -70,10 +76,9 @@ public class Physics {
 
     }
 
-    public static void applyFriction(GolfObject obj, float time,float coefficient){
-
+    public static void applyFriction(GolfObject obj,float coefficient){
         if(!obj.isFlying()) {
-            float u = coefficient * time;
+            float u = coefficient *0.0086f;
             Vector3f vel = obj.getVelocity();
             Vector3f newVel = new Vector3f(vel.x - (vel.x * u), vel.y - (vel.y * u), vel.z - (vel.z * u));
             if (Math.abs(newVel.x) < 0.2 && Math.abs(newVel.z) < 0.2 && obj.getPosition().y <= 0 && Math.abs(newVel.y) < 0.2) {
@@ -87,7 +92,7 @@ public class Physics {
 
     }
 
-    public static void collisionBall(Ball ball, Ball ball1, float time){
+    public static void collisionBall(Ball ball, Ball ball1){
         if(Maths.distancePoints(ball.getPosition(),ball1.getPosition())<=2*0.35578898){
 
             float newVelX1 = ball1.getVelocity().x;
@@ -99,8 +104,8 @@ public class Physics {
 
             ball.setVelocity(new Vector3f(newVelX1,newVelY1,newVelZ1));
             ball1.setVelocity(new Vector3f(newVelX2,newVelY2,newVelZ2));
-            setNewPosition(ball,time,false);
-            setNewPosition(ball1,time,false);
+            setNewPosition(ball,false);
+            setNewPosition(ball1,false);
 
 
         }
@@ -112,7 +117,7 @@ public class Physics {
     }
 
 
-    public static void applyCollisionBall(GolfObject obj, GolfObject obj2, Vector3f normals, float time){
+    public static void applyCollisionBall(GolfObject obj, GolfObject obj2, Vector3f normals){
         Vector3f vel1 = obj.getVelocity();
         Vector3f vel2 = obj2.getVelocity();
 
@@ -121,8 +126,8 @@ public class Physics {
         Vector3f I = Maths.scalarProduct(normals,(1+obj.getCor()*dot/(1/obj.getMass() + 1/obj2.getMass())));
         obj.setVelocity(Maths.vector3SUB(vel1,Maths.scalarProduct(I,1/obj.getMass())));
         obj2.setVelocity(Maths.vector3SUM(vel2,Maths.scalarProduct(I,1/obj.getMass())));
-        setNewPosition(obj,time,false);
-        setNewPosition(obj2,time,false);
+        setNewPosition(obj,false);
+        setNewPosition(obj2,false);
     }
 
     public static boolean checkBroadCollision(Entity en1, Entity en2){
@@ -194,7 +199,7 @@ public class Physics {
 
     }
 
-    public static void terrainCollision(GolfObject obj, Terrain terrain, float time){
+    public static void terrainCollision(GolfObject obj, Terrain terrain){
         if(obj.isMoving()) {
             float l1 = terrain.getX();
             float l2 = terrain.getZ();
@@ -206,24 +211,24 @@ public class Physics {
             Vector3f normalVel = new Vector3f(vel.x, vel.y, vel.z);
             normalVel.normalise();
             if (obj.getPosition().x - 0.35578898 <= l1 && Vector3f.dot(normalVel, new Vector3f(-1, 0, 0)) > 0) {
-                applyCollision(obj, new Vector3f(-1, 0, 0), time);
-                setNewPosition(obj, time, terrain);
+                applyCollision(obj, new Vector3f(-1, 0, 0));
+                setNewPosition(obj, terrain);
             }
             if (obj.getPosition().x + 0.35578898 >= l3 && Vector3f.dot(normalVel, new Vector3f(1, 0, 0)) > 0) {
-                applyCollision(obj, new Vector3f(1, 0, 0), time);
-                setNewPosition(obj, time, terrain);
+                applyCollision(obj, new Vector3f(1, 0, 0));
+                setNewPosition(obj, terrain);
             }
             if (obj.getPosition().z - 0.35578898 <= l2 && Vector3f.dot(normalVel, new Vector3f(0, 0, -1)) > 0) {
-                applyCollision(obj, new Vector3f(0, 0, -1), time);
-                setNewPosition(obj, time, terrain);
+                applyCollision(obj, new Vector3f(0, 0, -1));
+                setNewPosition(obj, terrain);
             }
             if (obj.getPosition().z + 0.35578898 >= l4 && Vector3f.dot(normalVel, new Vector3f(0, 0, 1)) > 0) {
-                applyCollision(obj, new Vector3f(0, 0, 1), time);
-                setNewPosition(obj, time, terrain);
+                applyCollision(obj, new Vector3f(0, 0, 1));
+                setNewPosition(obj, terrain);
             }
 
             if (obj.getPosition().y <= 0) {
-                applyCollision(obj, new Vector3f(0, 1, 0), time);
+                applyCollision(obj, new Vector3f(0, 1, 0));
             }
         }
 
@@ -231,7 +236,7 @@ public class Physics {
 
     }
 
-    public static void collision(GolfObject obj1, GolfObject obj2, float time){
+    public static void collision(GolfObject obj1, GolfObject obj2){
         obj1.setColliding(false);
         boolean collision = checkBroadCollision(obj1.getModel(),obj2.getModel());
         if(collision){
@@ -257,7 +262,7 @@ public class Physics {
 
             if(normal!=null) {
                 obj1.setColliding(true);
-                applyCollision(obj1, normal, time);
+                applyCollision(obj1, normal);
             }
         }
 

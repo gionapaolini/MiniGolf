@@ -162,16 +162,16 @@ public class PlayerControl {
         }
     }
 
-    public void applySurfaceFriction(GolfObject obj, float time,List<Surface> surfaces){
+    public void applySurfaceFriction(GolfObject obj,List<Surface> surfaces){
         for(Surface surface: surfaces){
 
             if(surface.ballIsOver(obj)){
                 System.out.println("Friction: "+surface.getCoefficientFriction());
-                Physics.applyFriction(obj,time,surface.getCoefficientFriction());
+                Physics.applyFriction(obj,surface.getCoefficientFriction());
                 return;
             }
         }
-        Physics.applyFriction(obj,time,1.5f);
+        Physics.applyFriction(obj,1.5f);
 
     }
 
@@ -180,23 +180,23 @@ public class PlayerControl {
             Ball ball = player.getBall();
             if(ball.isMoving()){
                 if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
-                    Physics.applyGravity(ball,time,false);
+                    Physics.applyGravity(ball,false);
                   //  Physics.applyWind(ball,time,wind,false);
-                    applySurfaceFriction(ball,time,surfaces);
-                    Physics.terrainCollision(ball,terrain,time);
+                    applySurfaceFriction(ball,surfaces);
+                    Physics.terrainCollision(ball,terrain);
                     for(Obstacle obstacle:obstacles){
-                        Physics.collision(ball,obstacle,time);
+                        Physics.collision(ball,obstacle);
                     }
                     for(Player player2: players){
                         if(player2 != player){
-                            Physics.collisionBall(player.getBall(),player2.getBall(),time);
+                            Physics.collisionBall(player.getBall(),player2.getBall());
                         }
                     }
-                    Physics.setNewPosition(ball,time,false);
+                    Physics.setNewPosition(ball,false);
                 }else {
-                    Physics.applyGravity(ball,time,true);
-                    Physics.collision(ball,putHole,time);
-                    Physics.setNewPosition(ball,time,true);
+                    Physics.applyGravity(ball,true);
+                    Physics.collision(ball,putHole);
+                    Physics.setNewPosition(ball,true);
                     if(ball.getPosition().y<-1){
                         pause=true;
 
