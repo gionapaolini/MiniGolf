@@ -41,7 +41,7 @@ public class PlayerControl {
         this.picker = picker;
         this.arrow3D = arrow3D;
         wind = new Vector3f(0,0,0);
-        pointToReach = new Vector3f(0,0,0);
+        pointToReach = new Vector3f((float) Math.random()*10-5,0,(float) Math.random()*10-5);
 
     }
 
@@ -111,6 +111,8 @@ public class PlayerControl {
             selectPlayer();
             disabledShot = false;
             timeLeft = maxTimeTurn;
+            pointToReach = new Vector3f((float) Math.random()*10-5,0,(float) Math.random()*10-5);
+
         }
     }
 
@@ -124,11 +126,7 @@ public class PlayerControl {
     }
 
     public void moveArrowWind(){
-        double rand = Math.random()*10000;
-        if(rand<50){
-           pointToReach = new Vector3f((float) Math.random()*10-5,0,(float) Math.random()*10-5);
-            System.out.println("Change wind!"+ rand);
-        }
+
         if(wind.x<pointToReach.x){
             wind.x+=0.01;
         }
@@ -181,7 +179,7 @@ public class PlayerControl {
             if(ball.isMoving()){
                 if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
                     Physics.applyGravity(ball,time,false);
-                  //  Physics.applyWind(ball,time,wind,false);
+                    Physics.applyWind(ball,time,wind,false);
                     applySurfaceFriction(ball,time,surfaces);
                     Physics.terrainCollision(ball,terrain,time);
                     for(Obstacle obstacle:obstacles){
