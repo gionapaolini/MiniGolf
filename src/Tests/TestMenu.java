@@ -71,12 +71,12 @@ public class TestMenu {
 
         GuiGame guiGame = new GuiGame(loader);
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,mousePicker,settings);
-        System.out.println("GNAGGNA");
 
         Map map = new Map(terrain,obstacles,balls,surfaces,putHole);
 
         float timePhysics = 0.0084f;
         while (!Display.isCloseRequested()){
+            System.out.println(DisplayManager.getFrameTimeSeconds());
             switch(settings.getPhase()){
                 case 1:
                     camera.moveOnSight();
