@@ -73,7 +73,6 @@ public class TestMenu {
         GuiGame guiGame = new GuiGame(loader);
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,mousePicker,settings);
 
-
         while (!Display.isCloseRequested()){
             switch(settings.getPhase()){
                 case 1:

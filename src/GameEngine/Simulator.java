@@ -31,9 +31,8 @@ public class Simulator {
         Ball ball = new Ball(ballEnt);
 
         ball.setVelocity(shots);
-        float time;
+        float time =0.017f;
         do {
-            time = (float) Math.random()*0.002f+0.016f;
             //if (!Physics.checkBroadCollision(ball.getModel(), map.getPutHole().getFakeHole()) && ball.getPosition().y > -0.1) {
                 Physics.applyGravity(ball, false, time);
 

@@ -169,16 +169,17 @@ public class PlayerControl {
 
 
     public void applyPhysics(List<Obstacle> obstacles,Terrain terrain,PutHole putHole,List<Surface> surfaces){
+        float time = 0.017f;
         for(Player player: players){
             Ball ball = player.getBall();
             if(ball.isMoving()){
                 if(!Physics.checkBroadCollision(ball.getModel(),putHole.getFakeHole()) && ball.getPosition().y>-0.1){
-                    Physics.applyGravity(ball,false);
+                    Physics.applyGravity(ball,false,time);
                   //  Physics.applyWind(ball,time,wind,false);
-                    Physics.applySurfaceFriction(ball,surfaces);
-                    Physics.terrainCollision(ball,terrain);
+                    Physics.applySurfaceFriction(ball,surfaces,time);
+                    Physics.terrainCollision(ball,terrain,time);
                     for(Obstacle obstacle:obstacles){
-                        Physics.collision(ball,obstacle,false);
+                        Physics.collision(ball,obstacle,false,time);
                     }
                     /*
                     for(Player player2: players){
@@ -188,9 +189,9 @@ public class PlayerControl {
                     }
                     */
                 }else {
-                    Physics.applyGravity(ball,true);
-                    Physics.collision(ball,putHole,true);
-                    Physics.setNewPosition(ball,true);
+                    Physics.applyGravity(ball,true,time);
+                    Physics.collision(ball,putHole,true,time);
+                    Physics.setNewPosition(ball,true,time);
                     if(ball.getPosition().y<-1){
                         pause=true;
 
