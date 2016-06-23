@@ -1,6 +1,7 @@
 package GolfObjects;
 
 import GraphicsEngine.Entities.Terrain;
+import GraphicsEngine.RenderEngine.Loader;
 import GraphicsEngine.RenderEngine.MasterRenderer;
 
 import java.util.List;
@@ -16,13 +17,14 @@ public class Map {
     List<Ball> ballList;
     List<Surface> surfaceList;
     PutHole putHole;
-
-    public Map(Terrain terrain, List<Obstacle> obstacleList, List<Ball> ballList, List<Surface> surfaceList, PutHole putHole) {
+    Loader loader;
+    public Map(Terrain terrain, List<Obstacle> obstacleList, List<Ball> ballList, List<Surface> surfaceList, PutHole putHole, Loader loader) {
         this.terrain = terrain;
         this.obstacleList = obstacleList;
         this.ballList = ballList;
         this.surfaceList = surfaceList;
         this.putHole = putHole;
+        this.loader = loader;
         idMap = nMaps;
         nMaps++;
     }
@@ -63,5 +65,9 @@ public class Map {
             renderer.processEntity(surface.getModel());
         }
         renderer.processEntity(putHole.getFakeHole());
+    }
+
+    public Loader getLoader() {
+        return loader;
     }
 }

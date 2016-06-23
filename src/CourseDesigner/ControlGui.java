@@ -526,8 +526,9 @@ public class ControlGui {
 
         if(Keyboard.isKeyDown(Keyboard.KEY_X) || Keyboard.isKeyDown(Keyboard.KEY_C)){
             picker.update();
-            if(System.currentTimeMillis()-timeForTriangle>500 && Mouse.isButtonDown(0) && picker.getCurrentTerrainPoint()!=null){
 
+            if(System.currentTimeMillis()-timeForTriangle>500 && Mouse.isButtonDown(0) && picker.getCurrentTerrainPoint()!=null){
+                System.out.println(picker.getCurrentTerrainPoint());
                 frictionTriangle[count] = picker.getCurrentTerrainPoint();
                 count++;
                 timeForTriangle = System.currentTimeMillis();

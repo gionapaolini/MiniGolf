@@ -46,7 +46,7 @@ public class GuiMenu {
         font = new FontType(loader.loadTexture("arial"), new File("res/arial.fnt"));
         text = new GUIText("Number of Players", 2.05f, font, new Vector2f(-0.065f,0.115f),1f,true);
         text1 = new GUIText("Number of Bot", 2.05f, font, new Vector2f(-0.065f,0.315f),1f,true);
-        text2 = new GUIText("Bot Difficulty Level", 2.05f, font, new Vector2f(-0.065f,0.515f),1f,true);
+        text2 = new GUIText("Map level", 2.05f, font, new Vector2f(-0.065f,0.515f),1f,true);
         text3 = new GUIText("Turn Duration (sec)", 2.05f, font, new Vector2f(-0.065f,0.715f),1f,true);
         n = new GUIText("1", 2.05f, font, new Vector2f(0.14f,0.115f),1f,true);
         n1 = new GUIText("0", 2.05f, font, new Vector2f(0.14f,0.315f),1f,true);

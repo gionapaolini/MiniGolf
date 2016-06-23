@@ -63,20 +63,20 @@ public class TestMenu {
         TexturedModel arrow3DModel = new TexturedModel(OBJLoader.loadObjModel("arrow3D", loader),white);
         Entity arrow3D = new Entity(arrow3DModel, new Vector3f(1,0.001f,1), 0,0,0,1);
         List<Surface> surfaces = new ArrayList<Surface>();
-        SaveAndLoad.load(terrain,obstacles,balls,surfaces,putHole,loader,"save",settings);
+        //SaveAndLoad.load(terrain,obstacles,balls,surfaces,putHole,loader,"save1",settings);
 
         ControlGui controlGui = new ControlGui(loader,guiCourseCreator,balls,obstacles,putHole,terrain,mousePicker,settings, surfaces);
-        PlayerControl playerControl = new PlayerControl(players,camera, arrow, arrow3D,30, mousePicker);
-        MenuControl menuControl = new MenuControl(menu,mousePicker,settings,controlGui,players,balls,playerControl);
+        PlayerControl playerControl = new PlayerControl(players,camera, arrow, arrow3D,30, mousePicker,putHole);
+        Map map = new Map(terrain,obstacles,balls,surfaces,putHole, loader);
+
+        MenuControl menuControl = new MenuControl(menu,mousePicker,settings,controlGui,players,balls,playerControl, map);
 
         GuiGame guiGame = new GuiGame(loader);
         GuiControlGame guiControlGame = new GuiControlGame(guiGame,playerControl,mousePicker,settings);
 
-        Map map = new Map(terrain,obstacles,balls,surfaces,putHole);
 
         float timePhysics = 0.0084f;
         while (!Display.isCloseRequested()){
-            System.out.println(DisplayManager.getFrameTimeSeconds());
             switch(settings.getPhase()){
                 case 1:
                     camera.moveOnSight();

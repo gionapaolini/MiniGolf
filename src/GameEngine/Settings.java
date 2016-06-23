@@ -6,7 +6,7 @@ package GameEngine;
 public class Settings {
     int nHuman;
     int nBot;
-    int lvlBot;
+    int mapLevel;
     int round;
 
     int phase;
@@ -14,7 +14,7 @@ public class Settings {
     public Settings(){
          nHuman = 1;
          nBot = 0;
-         lvlBot = 0;
+        mapLevel = 1;
          round =30;
 
          phase = 2;
@@ -36,12 +36,12 @@ public class Settings {
         this.nBot = nBot;
     }
 
-    public int getLvlBot() {
-        return lvlBot;
+    public int getmapLevel() {
+        return mapLevel;
     }
 
-    public void setLvlBot(int lvlBot) {
-        this.lvlBot = lvlBot;
+    public void setmapLevel(int mapLevel) {
+        this.mapLevel = mapLevel;
     }
 
     public int getRound() {

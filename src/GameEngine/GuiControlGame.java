@@ -34,7 +34,7 @@ public class GuiControlGame {
 
         Vector2f mouseC = picker.getNormalCoord();
 
-        if ((mouseC.x >= 0.867) && (mouseC.x <= 0.924) && (mouseC.y <= 0.939) && (mouseC.y >= 0.855)) {
+        if (!playerControl.pause && (mouseC.x >= 0.867) && (mouseC.x <= 0.924) && (mouseC.y <= 0.939) && (mouseC.y >= 0.855)) {
             pause.select();
             playerControl.wait =true;
             play.deselect();

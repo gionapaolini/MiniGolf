@@ -22,15 +22,16 @@ public class PlayerControl {
     Camera camera;
     Entity arrow, arrow3D;
     public int nPlayer, timeLeft, maxTimeTurn;
-    public boolean disabledShot, pause, wait;
+    public boolean disabledShot, pause, wait, endGame;
     long time;
     long timeLeftShot = 0;
     MousePicker picker;
     long lastShot;
     Vector3f pointToReach,wind;
+    PutHole putHole;
 
 
-    public PlayerControl(List<Player> players, Camera camera, Entity arrow, Entity arrow3D, int maxTimeTurn, MousePicker picker) {
+    public PlayerControl(List<Player> players, Camera camera, Entity arrow, Entity arrow3D, int maxTimeTurn, MousePicker picker, PutHole putHole) {
         this.players = players;
         this.camera = camera;
         nPlayer = 0;
@@ -42,6 +43,7 @@ public class PlayerControl {
         this.arrow3D = arrow3D;
         wind = new Vector3f(0,0,0);
         pointToReach = new Vector3f(0,0,0);
+        this.putHole = putHole;
 
     }
 
@@ -60,6 +62,7 @@ public class PlayerControl {
         disabledShot = false;
         selectPlayer();
         this.timeLeft = timeLeft;
+        endGame = false;
         setPause(false);
     }
     public void destroy(){
@@ -80,10 +83,28 @@ public class PlayerControl {
     }
 
     public void shot(Vector3f point){
-        if(point!= null && !disabledShot && Mouse.isButtonDown(0) && !wait) {
+        if(!disabledShot && currentPlayer instanceof Bot){
+            Vector3f diff;
+            if(((Bot) currentPlayer).shots<3) {
+                 diff = Maths.vector3SUB(putHole.getPosition(), currentPlayer.getBall().getPosition());
+            }else {
+                float x =(float) Math.random()*10-5;
+                float z =(float) Math.random()*10-5;
+                diff = new Vector3f(x,0,z);
+            }
+
+            float distance = Maths.distancePoints(arrow.getPosition(), point);
+            distance = Math.min(distance, 2);
+            diff.normalise();
+            diff = Maths.scalarProduct(diff, 5 * distance);
+            currentPlayer.getBall().setVelocity(diff);
+            disabledShot = true;
+            lastShot = System.currentTimeMillis();
+
+        }else if(point!= null && !disabledShot && Mouse.isButtonDown(0) && !wait) {
             Vector3f diff = Maths.vector3SUB(point, currentPlayer.getBall().getPosition());
             float distance = Maths.distancePoints(arrow.getPosition(), point);
-            distance = Math.min(distance, 4);
+            distance = Math.min(distance, 2);
             diff.normalise();
             diff = Maths.scalarProduct(diff, 5 * distance);
             currentPlayer.getBall().setVelocity(diff);
@@ -94,7 +115,7 @@ public class PlayerControl {
     }
 
     public void game(List<Obstacle> obstacles, Terrain terrain, PutHole putHole, float time,List<Surface> surfaces){
-        if(!pause && System.currentTimeMillis()-this.time>1000) {
+        if(!pause && !endGame && System.currentTimeMillis()-this.time>1000) {
             moveArrow(picker.getCurrentTerrainPoint());
             moveArrowWind();
             decrementTimeLeft();
@@ -198,7 +219,8 @@ public class PlayerControl {
                     Physics.collision(ball,putHole,true);
                     Physics.setNewPosition(ball,true);
                     if(ball.getPosition().y<-1){
-                        pause=true;
+
+                        endGame = true;
 
                     }
                 }

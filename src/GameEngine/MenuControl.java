@@ -2,10 +2,12 @@ package GameEngine;
 
 import CourseDesigner.ControlGui;
 import GolfObjects.Ball;
+import GolfObjects.Map;
 import GraphicsEngine.Guis.*;
 import GraphicsEngine.fontMeshCreator.FontType;
 import GraphicsEngine.fontMeshCreator.GUIText;
 import Toolbox.MousePicker;
+import Toolbox.SaveAndLoad;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -40,9 +42,10 @@ public class MenuControl {
     List<Player> players;
     List<Ball> balls;
     PlayerControl control;
+    Map map;
 
 
-    public MenuControl(GuiMenu menu, MousePicker picker, Settings setting, ControlGui controlGui, List<Player> players, List<Ball> balls, PlayerControl control){
+    public MenuControl(GuiMenu menu, MousePicker picker, Settings setting, ControlGui controlGui, List<Player> players, List<Ball> balls, PlayerControl control, Map map){
         this.menu = menu;
         this.picker = picker;
         courseDesigner = menu.getCourseDesigner();
@@ -70,6 +73,7 @@ public class MenuControl {
         this.players = players;
         this.balls = balls;
         this.control = control;
+        this.map = map;
 
     }
 
@@ -243,14 +247,16 @@ public class MenuControl {
                 n1.setTextString(""+setting.nBot);
             }
         }else if(settingState && lvlBot.isPlus()){
-            if(setting.lvlBot<3) {
-                setting.lvlBot++;
-                n2.setTextString(""+setting.lvlBot);
+            if(setting.mapLevel<6) {
+                setting.mapLevel++;
+                SaveAndLoad.load(map, "save"+setting.mapLevel,setting);
+                n2.setTextString(""+setting.mapLevel);
             }
         }else if(settingState && lvlBot.isMinus()){
-            if(setting.lvlBot>1) {
-                setting.lvlBot--;
-                n2.setTextString(""+setting.lvlBot);
+            if(setting.mapLevel>1) {
+                setting.mapLevel--;
+                SaveAndLoad.load(map, "save"+setting.mapLevel,setting);
+                n2.setTextString(""+setting.mapLevel);
             }
         }else if(settingState && timeTurn.isPlus()){
             if(setting.round<60) {
@@ -269,7 +275,7 @@ public class MenuControl {
             for(int i =0;i<n;i++){
                 players.add(new Human(balls.get(i)));
             }
-            for(int i =n;i<n1;i++){
+            for(int i =n;i<n+n1;i++){
                 players.add(new Bot(balls.get(i)));
             }
             control.initialize(setting.getRound());
