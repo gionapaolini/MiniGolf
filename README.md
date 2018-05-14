@@ -1,2 +1,2 @@
 # MiniGolf Application Screenshots
-![Alt text](/CATTURA1.png)
+![Alt text](/Cattura1.png)
